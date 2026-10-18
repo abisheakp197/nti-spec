@@ -1,10 +1,18 @@
-# NTI-1 Conformance Test Suite
+# NTI-1 Conformance Test Suite & Examples
 
-This folder will contain the official conformance test suite for NTI-1.
+This directory contains official NTI-1 conformance JSON examples and the python validation engine.
 
-Status: **Coming soon.**
+## Contents
 
-The test suite will be a Python package that implementers can run against their
-systems to verify compliance with NTI-1 Section 5 (Testable Requirements).
+- `identity.json` — Conformance example for Pillar 1 (Identity), defining a CRYSTALS-Dilithium5 key specification.
+- `capability_policy.json` — Conformance example for Pillar 2 (Governance), defining capabilities and caveats.
+- `audit_log.json` — Conformance example for Pillar 4 (Audit), defining a SHA-256 Merkle-chained event trail.
+- `validate.py` — Automated validator that validates JSON schema conformance and executes Python code blocks across the specification.
 
-Expected release: Q2 2026.
+## Execution
+
+To validate all conformance examples and run embedded code blocks:
+
+```bash
+python3 conformance/validate.py
+```
