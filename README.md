@@ -70,3 +70,48 @@ Amendments are proposed via RFCs in the [rfcs/](./rfcs/) folder.
 ## License
 
 Creative Commons Attribution 4.0 International (CC-BY-4.0).
+
+---
+
+## Architecture
+
+```mermaid
+graph TD
+    subgraph SPEC["NTI-1 Specification (The Rulebook)"]
+        NTI1["NTI-1.md Standard"]
+        RFCS["RFC Amendments"]
+        CONF_TESTS["Testable Requirement Suites"]
+    end
+
+    subgraph LAYERS["Core Protocol Layers & 5 Pillars"]
+        L1["Identity Layer (PQC / Dilithium5)"]
+        L2["Governance Layer (Capabilities & Caveats)"]
+        L3["Consensus Layer (BFT Threshold Validation)"]
+        L4["Audit Layer (SHA-256 Merkle Chain)"]
+        L5["Persistence Layer (State Integrity & HSM)"]
+    end
+
+    subgraph LEVELS["Conformance Levels"]
+        LVL1["Level 1: Basic (Identity + Audit)"]
+        LVL2["Level 2: Standard (All 5 Pillars)"]
+        LVL3["Level 3: Enterprise (5 Pillars + HSM + SLA + Audits)"]
+    end
+
+    subgraph IMPL["Reference Implementations & Frameworks"]
+        RUST["Rust Core (ube-foundation)"]
+        PY["Python SDK (ube-foundation)"]
+        WRAP["Framework Wrappers (LangChain, CrewAI, AutoGen)"]
+    end
+
+    subgraph VAL["Validation & Certification"]
+        VAL_SCRIPT["Conformance Validator (conformance/validate.py)"]
+        CERT["NTI Registry / Certification"]
+    end
+
+    SPEC -->|Defines Rules & Requirements| LAYERS
+    LAYERS -->|Enforces Specifications Across| LEVELS
+    LEVELS -->|Mandates Compliance For| IMPL
+    IMPL -->|Generates Artifacts & Logs| VAL_SCRIPT
+    CONF_TESTS -->|Provides Validation Suites| VAL_SCRIPT
+    VAL_SCRIPT -->|Verifies Compliance| CERT
+```
