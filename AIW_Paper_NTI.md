@@ -34,6 +34,16 @@ How do we pause, halt, or revoke a live agent chain?
 * **Continuous State Heartbeat:** The NTI sidecar maintains a live connection to the Trust Engine. A policy layer (human or automated) can issue a "pause" or "halt" command to the Trust Engine. The sidecar intercepts the next internal agent loop and forces a suspension.
 * **Merkle-Chained Revocation Registry:** Capability tokens are bound to a root hash. If a human revokes a delegated authority, the root hash updates. The sidecar verifies the token's Merkle proof against the *latest* root hash in real-time. Even if the token was issued mid-chain, it is rejected at the boundary.
 
+## . Solving the Runtime Gap (Response to AIW Topic 2)
+
+How do we pause, halt, or revoke a live agent chain? Based on discussions in the W3C AI Agent Protocol Community Group, the NTI runtime enforcement model is defined as follows:
+
+*   **The Safe Interruption Point:** You cannot safely interrupt an atomic tool execution mid-flight without corrupting external state. NTI enforces pauses strictly at the sub-call boundary. The agent finishes its current atomic tool call, and the sidecar intercepts the *next* planned execution payload.
+*   **Continuous State Heartbeat:** The NTI sidecar maintains a live connection to the Trust Engine. A policy layer (human or automated) can issue a "pause" or "halt" command to the Trust Engine. The sidecar intercepts the next internal agent loop and forces a suspension.
+*   **LGD Lifecycle State Machine (Contributed by Steven Zhao):** We adopt the LGD state transitions for runtime halts: `REGISTERED -> GATE_PASSED -> ACTIVE -> ANOMALY -> PAUSE -> ROLLBACK -> REVERIFY -> RESUMED`. 
+*   **Enforcement over Policy (Response to Alan Karp):** While an LLM can evaluate policy and signal a `PAUSE`, it cannot be trusted to enforce it. The NTI sidecar is the deterministic enforcement layer. It intercepts the execution loop, blocks the socket connection, and signs the `PAUSE` or `ROLLBACK` receipt using Dilithium5.
+*   **Merkle-Chained Revocation Registry:** Capability tokens are bound to a root hash. If a human or policy layer issues a `PAUSE`, the root hash updates. The sidecar verifies the token's Merkle proof against the *latest* root hash in real-time. Even if the token was issued mid-chain, it is rejected at the boundary.**   
+
 ## 4. The Regulatory Necessity (EU AI Act & SOC2)
 
 Under EU consumer law (Directive 2011/83/EU, Art. 8(2)), merchants must prove explicit acknowledgment of an order. If an agent places an order, the merchant must cryptographically prove *which human* delegated the authority. HDP records the intent, but NTI enforces the boundary. Together, they create a court-admissible SOC2 and EU AI Act compliance stack.
