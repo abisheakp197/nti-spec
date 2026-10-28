@@ -1,6 +1,6 @@
-[![NTI Verified](https://img.shields.io/badge/NTI_Score-83%2F100-brightgreen)](https://nti-registry.vercel.app)
+# NTI Specification
 
-# NTI-1 Specification
+[![NTI Verified](https://img.shields.io/badge/NTI_Score-83%2F100-brightgreen)](https://nti-registry.vercel.app)
 
 ## Neutral Trust Infrastructure — Standard 1
 
