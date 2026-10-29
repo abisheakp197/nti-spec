@@ -20,11 +20,13 @@ This document specifies NTI-1 (Neutral Trust Infrastructure — Standard 1), a p
 4. [The 5 Pillars](#3-the-5-pillars)
 5. [Compliance Levels](#4-compliance-levels)
 6. [Testable Requirements](#5-testable-requirements)
-7. [Reference Implementation](#6-reference-implementation)
-8. [Certification Process](#7-certification-process)
-9. [Governance](#8-governance)
-10. [Security Considerations](#9-security-considerations)
-11. [Appendix](#10-appendix)
+7. [Runtime Halt & Revocation (LGD State Machine)](#6-runtime-halt--revocation-lgd-state-machine)
+8. [Ecosystem Interoperability: ASL Conformance Kit](#7-ecosystem-interoperability-asl-conformance-kit)
+9. [Reference Implementation](#8-reference-implementation)
+10. [Certification Process](#9-certification-process)
+11. [Governance](#10-governance)
+12. [Security Considerations](#11-security-considerations)
+13. [Appendix](#12-appendix)
 
 ---
 
@@ -261,7 +263,67 @@ Each requirement below is testable by a third party.
 
 ---
 
-## 6. Reference Implementation
+## 6. Runtime Halt & Revocation (LGD State Machine)
+
+### 6.1 Lifecycle State Machine
+
+To enforce continuous runtime revocation without corrupting atomic execution, NTI-1 standardizes the LGD (Lifecycle Governance Domain) state machine sequence:
+
+`REGISTERED -> GATE_PASSED -> ACTIVE -> ANOMALY -> PAUSE -> ROLLBACK -> REVERIFY -> RESUMED`
+
+- **REGISTERED**: The agent identity is bound to a principal and registered with the trust authority.
+- **GATE_PASSED**: Pre-execution capability policy and signature checks have succeeded.
+- **ACTIVE**: The agent is actively executing authorized tool sub-calls.
+- **ANOMALY**: Runtime anomaly or policy drift is detected by the sidecar or verification engine.
+- **PAUSE**: Execution is immediately halted at the next tool sub-call boundary.
+- **ROLLBACK**: Unverified or uncommitted actions are reverted to a safe state checkpoint.
+- **REVERIFY**: Capabilities, signatures, and delegation proofs are re-evaluated.
+- **RESUMED**: Following successful re-verification, the agent transitions back to active operation.
+
+### 6.2 Fail-Closed Semantics for Unreachable Registries
+
+When a revocation registry or trust authority is unreachable during runtime verification, the system MUST enforce fail-closed semantics to prevent silent execution under stale authority.
+
+If a status check cannot be completed, the runtime MUST emit an `incomplete_check` block and transition immediately to `PAUSE`:
+
+```json
+{
+  "incomplete_check": {
+    "reason": "tryLater"
+  }
+}
+```
+
+The `reason` field MUST be set to one of the following canonical error values:
+
+- `tryLater`: Temporary network or service unavailability; retry recommended after backoff.
+- `not_authoritative`: The queried registry endpoint cannot provide authoritative status for the identity.
+- `internal_error`: Unhandled internal exception or processing error during status resolution.
+
+When an `incomplete_check` is encountered, the runtime sidecar MUST NOT allow the action request to proceed under assumed validity.
+
+---
+
+## 7. Ecosystem Interoperability: ASL Conformance Kit
+
+### 7.1 CI/CD Pipeline Integration
+
+NTI has integrated the ASL (Agent Security Lab) Conformance Kit into its CI/CD verification pipeline. This integration validates runtime containment across kernel-level egress confinement and 700-agent swarm stress tests.
+
+### 7.2 Architectural Distinction
+
+NTI and ASL serve complementary roles in the agentic trust stack:
+
+- **ASL (Agent Security Lab)**: Provides local containment, operating as the isolated sandbox environment ("the test lab") that enforces OS-level egress filters, memory isolation, and swarm load boundaries.
+- **NTI (Neutral Trust Infrastructure)**: Provides the cross-enterprise runtime trust layer ("the engine") that enforces principal-bound cryptographic identity, zero-trust policy evaluation, BFT consensus, and tamper-evident audit trails.
+
+### 7.3 Interoperability Transport
+
+ASL local containment and the NTI cross-enterprise trust engine interoperate via **AF_UNIX sockets**. This local IPC transport provides high-throughput, low-latency communication between the local kernel sandbox and the NTI cryptographic sidecar while preventing external socket interception.
+
+---
+
+## 8. Reference Implementation
 
 The reference implementation is `ube-foundation`, available at:
 
@@ -279,13 +341,13 @@ Alternative implementations are permitted and encouraged under the CC-BY-4.0 lic
 
 ---
 
-## 7. Certification Process
+## 9. Certification Process
 
-### 7.1 Self-Assessment
+### 9.1 Self-Assessment
 
 Implementers MAY self-assess against this specification.
 
-### 7.2 Third-Party Certification
+### 9.2 Third-Party Certification
 
 For formal NTI-1 certification:
 
@@ -295,23 +357,23 @@ For formal NTI-1 certification:
 4. Complete a third-party audit.
 5. Receive certification valid for 12 months, renewable.
 
-### 7.3 Public Registry
+### 9.3 Public Registry
 
 Certified implementations will be listed in the NTI Registry (forthcoming).
 
 ---
 
-## 8. Governance
+## 10. Governance
 
-### 8.1 Steward
+### 10.1 Steward
 
 The NTI-1 specification is stewarded by the NTI Foundation.
 
-### 8.2 Amendments
+### 10.2 Amendments
 
 Proposed changes are submitted as RFCs in the `rfcs/` folder. Amendments require public comment and a 30-day review period.
 
-### 8.3 Versioning
+### 10.3 Versioning
 
 Specification versions use semantic versioning:
 
@@ -319,43 +381,43 @@ Specification versions use semantic versioning:
 - **Minor** — Backwards-compatible additions
 - **Patch** — Clarifications and errata
 
-### 8.4 Neutrality
+### 10.4 Neutrality
 
 The NTI-1 standard MUST remain neutral. It MUST NOT favor any single vendor, platform, or jurisdiction.
 
 ---
 
-## 9. Security Considerations
+## 11. Security Considerations
 
-### 9.1 Quantum Threat
+### 11.1 Quantum Threat
 
 Classical signature schemes will be broken by sufficiently large quantum computers. NTI-1 mandates PQC from day one to avoid a costly migration later.
 
-### 9.2 Side-Channel Attacks
+### 11.2 Side-Channel Attacks
 
 Implementations SHOULD protect private keys against side-channel attacks via constant-time operations and, at Level 3, HSM storage.
 
-### 9.3 Replay Attacks
+### 11.3 Replay Attacks
 
 Action requests MUST include a unique identifier (UUID) and timestamp to prevent replay.
 
-### 9.4 Denial of Service
+### 11.4 Denial of Service
 
 Verifiers MUST rate-limit request processing and MUST NOT block the audit chain under load.
 
-### 9.5 Multi-Agent Collusion
+### 11.5 Multi-Agent Collusion
 
 BFT consensus (Pillar 3) is designed to resist up to $f < n/3$ malicious agents.
 
 ---
 
-## 10. Appendix
+## 12. Appendix
 
-### 10.1 Acknowledgements
+### 12.1 Acknowledgements
 
 This specification builds on decades of work in cryptography, distributed systems, and AI safety. It is offered as a neutral foundation for a global trust layer.
 
-### 10.2 Feedback
+### 12.2 Feedback
 
 Feedback is welcome at: <https://github.com/abisheakp197/nti-spec/issues>
 
