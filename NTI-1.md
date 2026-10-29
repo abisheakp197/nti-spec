@@ -8,7 +8,7 @@
 
 ## Abstract
 
-This document specifies NTI-1 (Neutral Trust Infrastructure — Standard 1), a post-quantum, zero-trust governance standard for autonomous AI agents. NTI-1 defines formal requirements across five core pillars: Identity, Governance, Consensus, Audit, and Persistence. It establishes standardized compliance levels, testable requirements, and verification protocols necessary for auditability and interoperability across enterprise multi-agent deployment environments.
+This document specifies NTI-1 (Neutral Trust Infrastructure — Standard 1), a post-quantum, zero-trust governance standard for autonomous AI agents. NTI-1 defines formal requirements across five core pillars: Principal-Bound Identity, Governance, Consensus, Audit, and Persistence. It establishes standardized compliance levels, testable requirements, and verification protocols necessary for auditability and interoperability across enterprise multi-agent deployment environments.
 
 ---
 
@@ -50,7 +50,7 @@ NTI-1 applies to any system in which an autonomous AI agent:
 Three converging forces make NTI-1 necessary:
 
 1. **Regulatory pressure.** NIST, the EU AI Act, and India DPDP Act are increasingly mandating verifiable AI governance.
-2. **Post-quantum urgency.** NIST has mandated migration to post-quantum cryptography (PQC). Agent identity must be PQC-compliant from day one.
+2. **Post-quantum urgency.** NIST has mandated migration to post-quantum cryptography (PQC). Principal-bound identity must be PQC-compliant from day one.
 3. **Threat landscape.** Prompt injection, hallucinated actions, and rogue agents are now the primary vectors of AI-driven harm.
 
 ### 1.4 Design Principles
@@ -84,19 +84,18 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ## 3. The 5 Pillars
 
-### 3.1 Pillar 1: Identity
+### 3.1 Pillar 1: Principal-Bound Identity
 
-**Requirement:** Every agent MUST have a unique, cryptographically verifiable identity.
+**Requirement:** Every agent MUST possess a principal-bound identity that cryptographically ties its actions to a responsible legal party (human or enterprise).
 
 **Specification:**
 
-- Agent identity MUST be established via a post-quantum signature scheme.
-- The RECOMMENDED scheme is CRYSTALS-Dilithium5 (NIST Level 5).
-- Every action request MUST be signed by the agent's private key.
-- The agent's public key MUST be resolvable by verifiers.
+- Non-repudiable identifiers MUST be tied to the responsible legal party (human or enterprise), delegated to the agent via post-quantum signatures (CRYSTALS-Dilithium5).
+- Every action request MUST be signed by the agent's private key delegated by or bound to the principal.
+- The principal's and agent's public keys MUST be resolvable by verifiers.
 - Identity claims MUST NOT be revocable without an auditable record.
 
-**Rationale:** Without cryptographic identity, no downstream verification is possible. Post-quantum schemes are mandatory because classical schemes (RSA, ECDSA) will be broken by quantum computers.
+**Rationale:** An AI agent is code and lacks legal standing. Cryptographic identity must bind agent actions to a responsible legal principal (human or enterprise) so accountability is non-repudiable. Post-quantum schemes are mandatory because classical schemes (RSA, ECDSA) will be broken by quantum computers.
 
 ---
 
@@ -206,7 +205,7 @@ def calculate_event_hash(event_id: str, agent_id: str, request_hash: str, decisi
 
 ### 4.1 Level 1: Basic
 
-- Pillars 1 (Identity) and 4 (Audit) are REQUIRED.
+- Pillars 1 (Principal-Bound Identity) and 4 (Audit) are REQUIRED.
 - Suitable for non-critical agents and internal tooling.
 
 ### 4.2 Level 2: Standard
@@ -230,7 +229,7 @@ def calculate_event_hash(event_id: str, agent_id: str, request_hash: str, decisi
 
 Each requirement below is testable by a third party.
 
-### 5.1 Identity Tests
+### 5.1 Principal-Bound Identity Tests
 
 - **T-1.1:** Submit an action with no signature. Result: MUST be Deny.
 - **T-1.2:** Submit an action with an invalid signature. Result: MUST be Deny.

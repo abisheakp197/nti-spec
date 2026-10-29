@@ -9,7 +9,7 @@
 
 As autonomous AI agents transition from experimental chat interfaces to operational infrastructure, the industry faces a critical gap in trust. Current frameworks like OAuth, ZCAP, and UCAN handle access control, while protocols like HDP provide post-incident audit trails. However, neither addresses the "runtime gap"—the ability to enforce cryptographic non-repudiation and halt an agent chain *mid-execution* when intent drifts.
 
-This paper proposes Neutral Trust Infrastructure (NTI), a framework-agnostic, post-quantum sidecar architecture. NTI bridges the gap between audit (HDP) and execution by acting as a fail-closed cryptographic bouncer at the tool-call boundary, solving the "key leakage" problem and providing a continuous runtime revocation model.
+This paper proposes Neutral Trust Infrastructure (NTI), a framework-agnostic, post-quantum sidecar architecture. NTI bridges the gap between audit (HDP) and execution by acting as a fail-closed cryptographic bouncer at the tool-call boundary, solving the "key leakage" problem and providing a continuous runtime revocation model anchored in principal-bound legal identity.
 
 ## 1. The Problem: Audit vs. Enforcement
 
@@ -45,7 +45,7 @@ Under EU consumer law (Directive 2011/83/EU, Art. 8(2)), merchants must prove ex
 
 To ensure enterprise compliance, the NTI-1 specification defines five core pillars:
 
-1. **Identity:** CRYSTALS-Dilithium5 post-quantum signatures (NIST Level 5).
+1. **Principal-Bound Identity:** Non-repudiable identifiers tied to the responsible legal party (human or enterprise), delegated to the agent via post-quantum signatures (CRYSTALS-Dilithium5).
 2. **Governance:** Zero-trust capability model with granular caveats.
 3. **Consensus:** BFT threshold decision validation for multi-agent workflows.
 4. **Audit:** SHA-256 Merkle-chained event logs.
@@ -53,7 +53,7 @@ To ensure enterprise compliance, the NTI-1 specification defines five core pilla
 
 ## 6. Conclusion
 
-NTI does not replace HDP, OAuth, or ZCAP. It is the neutral enforcement layer that makes them viable for enterprise deployment. By isolating keys, enforcing post-quantum signatures, and enabling continuous runtime revocation, NTI provides the missing infrastructure for the Agentic Web.
+NTI does not replace HDP, OAuth, or ZCAP. It is the neutral enforcement layer that makes them viable for enterprise deployment. By isolating keys, enforcing principal-bound post-quantum signatures, and enabling continuous runtime revocation, NTI provides the missing infrastructure for the Agentic Web.
 
 ---
 **The Standard (NTI-1 Spec):** <https://github.com/abisheakp197/nti-spec>
