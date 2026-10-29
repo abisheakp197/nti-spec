@@ -109,5 +109,7 @@ NTI does not replace HDP, OAuth, or ZCAP. It is the neutral enforcement layer th
 
 ---
 **The Standard (NTI-1 Spec):** <https://github.com/abisheakp197/nti-spec>
+
 **Reference Implementation:** <https://github.com/abisheakp197/Neutral-Trust-Infrastructure>
+
 **Compliance Leaderboard:** <https://nti-leaderboard.vercel.app>
