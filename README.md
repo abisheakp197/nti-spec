@@ -23,7 +23,7 @@
 
 NTI-1 specifies the **5 core pillars** that any compliant AI agent system MUST implement:
 
-1. **Identity** — Unique, non-repudiable agent identity backed by CRYSTALS-Dilithium5 post-quantum signatures (NIST Level 5).
+1. **Principal-Bound Identity** — Non-repudiable identifiers tied to the responsible legal party (human or enterprise), delegated to the agent via post-quantum signatures (CRYSTALS-Dilithium5).
 2. **Governance** — Zero-trust capability model enforcing granular caveats (expiration, max executions, value limits, and path restrictions).
 3. **Consensus** — Byzantine Fault Tolerant (BFT) threshold decision validation for high-value multi-agent workflows.
 4. **Audit** — Cryptographically tamper-evident, SHA-256 Merkle-chained event logs with exportable history.
@@ -33,7 +33,7 @@ NTI-1 specifies the **5 core pillars** that any compliant AI agent system MUST i
 
 ## Compliance Levels
 
-- **NTI-1 Level 1 (Basic)** — Requires Pillars 1 (Identity) and 4 (Audit). Recommended for non-critical internal tools.
+- **NTI-1 Level 1 (Basic)** — Requires Pillars 1 (Principal-Bound Identity) and 4 (Audit). Recommended for non-critical internal tools.
 - **NTI-1 Level 2 (Standard)** — Requires all 5 Pillars. Recommended for regulated production agent workflows.
 - **NTI-1 Level 3 (Enterprise)** — Requires all 5 Pillars + Hardware Security Module (HSM) key storage, SOC 2 Type II, ISO 27001, and 99.99% availability SLA. Recommended for banking, healthcare, and government systems.
 
@@ -86,7 +86,7 @@ graph TD
     end
 
     subgraph LAYERS["Core Protocol Layers & 5 Pillars"]
-        L1["Identity Layer (PQC / Dilithium5)"]
+        L1["Principal-Bound Identity Layer (PQC / Dilithium5)"]
         L2["Governance Layer (Capabilities & Caveats)"]
         L3["Consensus Layer (BFT Threshold Validation)"]
         L4["Audit Layer (SHA-256 Merkle Chain)"]
@@ -94,7 +94,7 @@ graph TD
     end
 
     subgraph LEVELS["Conformance Levels"]
-        LVL1["Level 1: Basic (Identity + Audit)"]
+        LVL1["Level 1: Basic (Principal-Bound Identity + Audit)"]
         LVL2["Level 2: Standard (All 5 Pillars)"]
         LVL3["Level 3: Enterprise (5 Pillars + HSM + SLA + Audits)"]
     end
