@@ -108,6 +108,7 @@ To ensure enterprise compliance, the NTI-1 specification defines five core pilla
 NTI does not replace HDP, OAuth, or ZCAP. It is the neutral enforcement layer that makes them viable for enterprise deployment. By isolating keys, enforcing principal-bound post-quantum signatures, and enabling continuous runtime revocation, NTI provides the missing infrastructure for the Agentic Web.
 
 ---
+
 **The Standard (NTI-1 Spec):** <https://github.com/abisheakp197/nti-spec>
 
 **Reference Implementation:** <https://github.com/abisheakp197/Neutral-Trust-Infrastructure>
