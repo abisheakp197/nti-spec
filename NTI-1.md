@@ -136,4 +136,4 @@ The NTI-1 specification is stewarded by the NTI Foundation. Proposed changes are
 **Acknowledgements:** This specification builds on decades of work in cryptography, distributed systems, and AI safety, specifically incorporating W3C CG feedback on Principal-Bound Identity and the LGD state machine.
 
 **Feedback:** Welcome at <https://github.com/abisheakp197/nti-spec/issues>
-```
+
