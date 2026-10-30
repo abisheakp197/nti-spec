@@ -17,8 +17,9 @@ Prepared by Xinghua Zhao, 2026-10-30. This note locks the three transition contr
 **0.4 Forking.** If a disagreement is not resolved within 30 days of circulation, either side may derive a further draft from the last release. A derived draft must carry a different document name and must state which release and fingerprint it derives from. Neither side may circulate a derived draft under this document's name.
 
 **0.5 Licensing and name status.** Three layers are licensed separately, and the boundary is stated here so that no later reader has to guess:
+
 | Layer | Scope | Licence |
-|---|---|---|
+| --- | --- | --- |
 | Normative text | Sections 1 through 6 of this document only | CC BY 4.0 |
 | Theory text and methodology | all LGD theory text, method descriptions and framework naming, whether or not referenced here | all rights reserved |
 | Reference implementation | the code repository cited in Section 5 | Apache-2.0 as code |
@@ -27,7 +28,7 @@ CC BY 4.0 applies to the normative text only, and only so that others may implem
 
 "NTI", "LGD" and "SynomosAI" appear as source identifiers only: none is a registered legal entity in any jurisdiction and none carries a registered trademark. Identifier status was not verified against a trademark register for this revision; the statement is a disclaimer of claim, not a claim of status.
 
-**0.6 Author and correspondence.** Xinghua Zhao, independent researcher, ORCID 0009-0001-0512-1237, zhaoxinghua07@126.com. Written objections under §0.3 and any markup of this draft go to that address, with the release fingerprint in the subject line — an objection that cannot be tied to a fingerprint cannot be tied to a version. Revisions from v0.1 are listed in the change log at the end.
+**0.6 Author and correspondence.** Xinghua Zhao, independent researcher, ORCID 0009-0001-0512-1237, <zhaoxinghua07@126.com>. Written objections under §0.3 and any markup of this draft go to that address, with the release fingerprint in the subject line — an objection that cannot be tied to a fingerprint cannot be tied to a version. Revisions from v0.1 are listed in the change log at the end.
 
 **0.7 Related artefacts, cited with the version they resolve to today.** Concept DOI 10.5281/zenodo.22821834 (uibc-core) currently resolves to version 0.3.0 of 2026-09-28; the ORCID record for the author lists version 0.2.1 of 2026-09-18, so the two sources disagree on version and the DOI is the authoritative one. First public anchor of the reference material: 2026-09-17 13:31:45 UTC, commit `cb6f11b` as recorded by the author. **No external transparency-log anchor is claimed in this document.** If such an anchor is relied on, it must be generated at the time of reliance and cited with its own log index and log identity; a transparency-log index is never carried over from a prior draft, because it cannot be verified without the log's inclusion proof. A citation that names the concept DOI without stating which version it resolved to on the date of citation is a stale citation, not a pinned one.
 
@@ -44,6 +45,7 @@ DENIED is not a state on this line. It is a boundary response value (Section 1.1
 A boundary value answers: may a new call proceed? This document does not yet enumerate the set. **Until the five values are listed here, this section is not testable and conformance tests must not be written against it.** Values appearing in the surrounding artifacts — DENIED in this document and in the demo, GATE_PASSED and APPROVED in the demo's gate record — are decision and state names, not a boundary set. The set must be drawn from the CoreSpec gate decision record, which is the normative source for gate decisions, and agreed by both sides (OPEN-1).
 
 Two layers stay distinct:
+
 - Boundary values answer: may a new call proceed? Post-revocation new call → DENIED.
 - Halt transitions answer: what happens to a chain already in flight? Mid-execution chain → PAUSE → ROLLBACK → (REVERIFY → RESUMED only if the restore condition is met).
 
@@ -56,6 +58,7 @@ Two layers stay distinct:
 ## 2. The three transition contracts
 
 ### 2.1 PAUSE
+
 - **Trigger:** a registered trigger — expiry, revocation, or anomaly signal.
 - **Where:** only at the sidecar boundary, between atomic tool calls, never mid-call. The current call finishes; the sidecar intercepts the next planned execution payload, checks the registry, blocks, and issues a signed PAUSE receipt.
 - **Receipt fields, tier 1 (normative now):** transition, trigger, checkpoint id, timestamp, monotonic counter.
@@ -65,12 +68,14 @@ Two layers stay distinct:
 - **Property:** a third party must be able to replay the receipt from pinned inputs. No interpreter opinion opens a transition.
 
 ### 2.2 ROLLBACK
+
 - **Target:** the last checkpoint.
 - **Receipt fields:** as for PAUSE — tier 1 now, tier 2 pending Section 4. The evidence snapshot reference replaces the checkpoint id where the rollback crosses a change gate.
 - **Property:** deterministic and replayable by a third party.
 - **Failure rule (normative):** if the target checkpoint is unavailable or fails its integrity check, the chain stays in ROLLBACK and must not reach RESUMED. A failed rollback is a halt that no restore condition can clear; clearing it requires an out-of-band decision by the declared verifier role. Failure of a rollback never resolves in favour of resumption.
 
 ### 2.3 REVERIFY → RESUMED — not automatic
+
 - **Gate:** a registered restore condition must arrive and verify in full: (a) an evidence list (e.g. re-benchmark + release note), (b) a verifier role, (c) a validity window.
 - **Missing any item:** the chain stays PAUSED and returns a structured receipt naming what is absent — a DENIED that names the gap, not a terminal state.
 - **Window expiry:** if the validity window closes before (a) and (b) verify, the chain stays PAUSED. It does not degrade to RESUMED by default and does not become terminal; the receipt records window closure as the reason. OPEN-4: whether a closed window escalates to the next authority is not specified here.
@@ -79,6 +84,7 @@ Two layers stay distinct:
 - **Citation status:** Regulation (EU) No 910/2014, Art. 28(4)-(5), consolidated text in force 20 May 2024 following amendment by Regulation (EU) 2024/1183. Wording was taken from a consolidated-text mirror on 2026-10-30; a direct retrieval of the EUR-Lex consolidated page returned a consent interstitial rather than the text, so the verbatim is not yet confirmed from the primary source. Recheck against EUR-Lex CELEX 02014R0910-20240520, and for any later amendment, before any reliance. This limitation is recorded rather than papered over: an unconfirmed verbatim is not a citation.
 
 ### 2.4 RESUME receipt — the `resume_basis` field (proposed in v0.1.4)
+
 - **Field:** `resume_basis = evidence | exemption`.
   - `evidence` — the registered restore condition was verified in full (evidence list, verifier role, validity window): the condition that caused the halt was confirmed restored.
   - `exemption` — an accountability layer accepted the risk; the reason is recorded, **not evaluated**. Both values permit RESUMED.
@@ -94,6 +100,7 @@ Two layers stay distinct:
 ---
 
 ## 3. Registry split (working proposal)
+
 - **Merkle revocation registry (NTI side):** the trigger source — "why halt now".
 - **Evidence registry (LGD side):** the restore source — "what must verify before resume".
 - The gate predicate reads both, as separate inputs, and must not collapse them into one registry.
@@ -104,6 +111,7 @@ Two layers stay distinct:
 ---
 
 ## 4. Signature layer (NTI side, to confirm — not claimed here)
+
 - **Proposal.** The NTI-side signature layer, as proposed by the NTI side on the agent-protocol thread, wraps the receipts so that every PAUSE and ROLLBACK is independently auditable. This note records it as a proposal, not as a verified property.
 - **Algorithm naming.** The thread refers to "Dilithium5". That name is pre-standardization. The standardized algorithm is ML-DSA, FIPS 204 (final, 2024-08-13), in three security levels; the highest level is ML-DSA-87. This document therefore writes ML-DSA-87 (FIPS 204) and records the historical name once. Naming verified 2026-10-30 against RFC 9881, which states that "prior to standardization, ML-DSA was known as Dilithium". The equivalence Dilithium5 = ML-DSA-87 is an inference from the round-3 submission's parameter sets, stated in implementation documentation and secondary sources; FIPS 204 itself does not use the Dilithium names, so the equivalence is recorded as an inference and not as a quotation.
 - **Encoding, not name.** FIPS 204 changed things that reach the bytes: deterministic signing becomes the default, an optional context string is added to signing and verification, pre-hash mode is formalised, and serialisation is specified more precisely. Sources disagree on how far that breaks byte-level compatibility with the round-3 submission — some state that keys and signatures from one cannot be verified by the other, others state that the core signing bytes match where randomised signing and context strings are not used. Because the sources conflict (OPEN-7), this document asserts neither. It asserts the operative rule only: a receipt encoding must be fixed to FIPS 204 explicitly, and no receipt may be specified against a round-3 Dilithium byte layout.
@@ -115,7 +123,9 @@ Two layers stay distinct:
 ---
 
 ## 5. Reference implementation (already runnable, unchanged)
-LGD-MedAI Demo v0.1 — https://github.com/zhaoxinghua09-cell/lgd-medai-demo
+
+LGD-MedAI Demo v0.1 — <https://github.com/zhaoxinghua09-cell/lgd-medai-demo>
+
 - **Pinned revision (file-level, not repository-level):** the demonstration artefact is `lgd_medai_demo.py` as committed in `038a4eb` (2026-09-26, the v0.1 release commit). That file has not changed since. The repository itself has moved — HEAD at the time of writing is `6cdd0ab` (2026-10-05, CI only) — so pinning the repository would have made "unchanged" false within a week. "Unchanged" in this section means unchanged for that file.
 - **Acceptance criterion source:** the README at `038a4eb` printed the pause tag as `PAUSED`; a later commit (`566c540`, 2026-09-27) corrected it to `PAUSE`, which is what the program actually emits. The criterion used here is the corrected one. Anyone reading the README at the pinned commit will see the stale tag, so the criterion is stated here rather than left to that file.
 - **Run:** one command, zero dependencies, Python 3.10+ — `python lgd_medai_demo.py`. Acceptance: `final_state = RESUMED` and the log containing the tags DENIED / PAUSE / ROLLBACK / RESUMED.
@@ -128,8 +138,9 @@ LGD-MedAI Demo v0.1 — https://github.com/zhaoxinghua09-cell/lgd-medai-demo
 ---
 
 ## 6. Open items
+
 | ID | Unresolved | Closes on | Blocks |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | OPEN-1 | Enumeration of the five boundary values | LGD + NTI, joint table | Section 1.1 untestable |
 | OPEN-2 | Definitions of "NTI" and "LGD" | Each side, own text | Outside reader cannot scope obligations |
 | OPEN-3 | Timestamp source (RFC 3161 or root anchor) | NTI + LGD | The replay claim in Section 2.1 |
@@ -143,21 +154,25 @@ No item on this list is closed by silence. Section 0.3 applies to objections to 
 ---
 
 ## 7. References
+
 | Cited in | Object | Link |
-|---|---|---|
-| §4 | FIPS 204, ML-DSA (final, 2024-08-13) | https://doi.org/10.6028/NIST.FIPS.204 |
-| §4 | FIPS 204 planning note / errata list | https://csrc.nist.gov/pubs/fips/204/final |
-| §4 | RFC 9881, X.509 identifiers for ML-DSA | https://www.rfc-editor.org/info/rfc9881 |
-| §4 | RFC 9882, ML-DSA in CMS | https://www.rfc-editor.org/info/rfc9882 |
-| §4 | RFC 9964, ML-DSA for JOSE and COSE | https://www.rfc-editor.org/info/rfc9964 |
-| §2.3 | Regulation (EU) No 910/2014, Art. 28 | https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02014R0910-20240520 |
-| §5 | Reference implementation repository | https://github.com/zhaoxinghua09-cell/lgd-medai-demo |
+| --- | --- | --- |
+| §4 | FIPS 204, ML-DSA (final, 2024-08-13) | <https://doi.org/10.6028/NIST.FIPS.204> |
+| §4 | FIPS 204 planning note / errata list | <https://csrc.nist.gov/pubs/fips/204/final> |
+| §4 | RFC 9881, X.509 identifiers for ML-DSA | <https://www.rfc-editor.org/info/rfc9881> |
+| §4 | RFC 9882, ML-DSA in CMS | <https://www.rfc-editor.org/info/rfc9882> |
+| §4 | RFC 9964, ML-DSA for JOSE and COSE | <https://www.rfc-editor.org/info/rfc9964> |
+| §2.3 | Regulation (EU) No 910/2014, Art. 28 | <https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:02014R0910-20240520> |
+| §5 | Reference implementation repository | <https://github.com/zhaoxinghua09-cell/lgd-medai-demo> |
 
 ---
+
+<!-- markdownlint-disable MD029 -->
 
 ## Change log
 
 **v0.1 → v0.1.1** (2026-10-30)
+
 1. Added Section 0 — status, freeze rule, effect of silence, forking, licensing and name status, author identity.
 2. Section 1 — stated that DENIED is a boundary response value, not a state.
 3. Section 1.1 — the five-value set is now declared OPEN-1 instead of being referenced as if enumerated.
@@ -171,6 +186,7 @@ No item on this list is closed by silence. Section 0.3 applies to objections to 
 11. Added Section 6 — open items with owners and blocked scope.
 
 **v0.1.1 → v0.1.2** (2026-10-30, same day; driven by the pre-publish review)
+
 12. Section 0.7 added — related artefacts with the versions they resolve to, including the discrepancy between the concept DOI (v0.3.0) and the ORCID listing (v0.2.1).
 13. Section 2.3 — citation status downgraded from "verified" to "verbatim from a mirror, primary source not yet retrieved"; the limitation is stated in the text rather than only in the review file.
 14. Section 4 — added the FIPS 204 edition and errata note (planning note dated 2026-07-31); byte-level encodings must pin the edition. Separated the Dilithium5 = ML-DSA-87 equivalence (an inference) from the quoted naming statement, and replaced the wire-compatibility assertion with the operative encoding rule, because the sources conflict (OPEN-7).
@@ -182,4 +198,7 @@ No item on this list is closed by silence. Section 0.3 applies to objections to 
 20. v0.1.3 — §0.5 rewritten as a three-layer licence table with an explicit boundary, because the previous single paragraph left the split between normative text and theory text to inference. §0.6 now carries a correspondence address, without which the §0.3 objection procedure had no destination and was not operable.
 
 **v0.1.3 → v0.1.4** (2026-10-30)
+
 21. Added §2.4 — the `resume_basis` field (evidence | exemption) and the two exemption boundaries (`exemption_covers = policy_violation`; `exemption_does_not_cover = authority_revoked, authority_not_determined`), proposed on the agent-protocol thread in reply to the VOC justification-receipt discussion. Marked as proposed, not agreed; no fingerprint until circulated. No state is added, removed, or renamed; the §1 transition line is unchanged. This closes the version-drift gap between the email sent that day and the frozen v0.1.3 text.
+
+<!-- markdownlint-enable MD029 -->
