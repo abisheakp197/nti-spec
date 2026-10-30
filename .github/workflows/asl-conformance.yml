@@ -1,0 +1,26 @@
+name: ASL Conformance
+
+on:
+  push:
+    branches: [main, "crucible/*"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  asl-conformance:
+    name: ASL Conformance Harness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run LGD Transition Sidecar
+        run: python conformance/transition_sidecar.py --selftest
