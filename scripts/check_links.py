@@ -70,7 +70,7 @@ def main() -> None:
             total_checked += 1
             status = check_external_url(url)
             print(f"  [{status}] {url} (in {rel_md})")
-            if status != 200:
+            if status not in (200, 202):
                 failed_links.append((str(rel_md), url, status))
 
         # Check local links
