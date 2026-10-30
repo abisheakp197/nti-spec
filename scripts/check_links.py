@@ -70,7 +70,7 @@ def main() -> None:
             total_checked += 1
             status = check_external_url(url)
             print(f"  [{status}] {url} (in {rel_md})")
-            if status != 200:
+            if not (200 <= status < 300):
                 failed_links.append((str(rel_md), url, status))
 
         # Check local links
@@ -90,7 +90,7 @@ def main() -> None:
             print(f"  - File: {file} | Link: {link} | Status: {status}")
         sys.exit(1)
     else:
-        print("✓ All links return HTTP 200 / verified local files!")
+        print("✓ All links return HTTP 2xx / verified local files!")
 
 
 if __name__ == "__main__":
