@@ -112,6 +112,8 @@ To enforce continuous runtime revocation without corrupting atomic execution, NT
 
 `REGISTERED -> GATE_PASSED -> ACTIVE -> ANOMALY -> PAUSE -> ROLLBACK -> REVERIFY -> RESUMED`
 
+> **Reference (draft for comment).** The state-machine logic and the `resume_basis` field below are drawn from the *NTI x LGD transition-contract spec - v0.1.4*, prepared by Xinghua Zhao (2026-10-30). That document is **draft for comment and explicitly "not agreed" by either side** (see its sec.0.1 / sec.0.3); it carries no standards-body weight outside its originating thread. It is linked here as a working reference for implementers, not as a ratified normative annex. Canonical, byte-for-byte copy: <https://github.com/zhaoxinghua09-cell/nti-lgd-transition-contract/blob/679b6e4445fb84e26cc051cda3b0ebed3d5526c3/nti-transition-contract-spec-v0.1.4.md>
+
 ### 6.1 Fail-Closed Semantics (`incomplete_check`)
 
 When a revocation registry or trust authority is unreachable, the system MUST enforce fail-closed execution. If a status check cannot be completed, the runtime MUST emit an `incomplete_check` and halt. The `reason` field MUST be set to one of the following:
@@ -121,6 +123,22 @@ When a revocation registry or trust authority is unreachable, the system MUST en
 * `internal_error`: Unhandled exception during status resolution.
 
 When `incomplete_check` is encountered, the runtime sidecar MUST NOT allow the action to proceed.
+
+### 6.2 Resume Receipt - the `resume_basis` field
+
+When the `REVERIFY -> RESUMED` edge is taken, the RESUME receipt MUST carry a `resume_basis` value from the closed set:
+
+* `evidence` - the registered restore condition was verified in full (evidence list, verifier role, validity window): the condition that caused the halt was confirmed restored.
+* `exemption` - an accountability layer accepted the risk; the reason is recorded, **not evaluated**. Both values permit `RESUMED`.
+
+The field adds to the RESUME receipt only; it does not add, remove, or rename a state, and the sec.6 transition line is unchanged.
+
+**Exemption boundaries (MUST be in the schema):**
+
+* `exemption_covers = policy_violation`
+* `exemption_does_not_cover = authority_revoked, authority_not_determined`
+
+`authority_revoked` is the issuing authority's decision, not the executing side's; a signed justification cannot un-revoke it. `authority_not_determined` is an absence of information (registry unreachable / stale root), not a judgment; a signature cannot convert "unknown" into "known". An exemption MUST NOT buy back the fail-closed property: `authority_revoked` and `authority_not_determined` MUST NOT be resumed on `exemption`.
 
 ## 7. Ecosystem Interoperability (ASL Conformance Kit)
 
