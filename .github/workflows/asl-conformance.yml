@@ -108,7 +108,7 @@ jobs:
           mkdir -p patched-rust-results
           rustc +1.90.0 -Vv > patched-rust-results/toolchain.txt
           sha256sum conformance/rust/patches/issuer-and-quorum.patch .nti-patched/ube-foundation/Cargo.lock > patched-rust-results/SHA256SUMS.txt
-          cargo +1.90.0 test --locked --manifest-path .nti-patched/ube-foundation/Cargo.toml --lib --test core_tests --test nti_conformance_regressions --test security_patch_tests -- --nocapture 2>&1 | tee patched-rust-results/cargo.log
+          cargo +1.90.0 test --locked --manifest-path .nti-patched/ube-foundation/Cargo.toml --lib --tests -- --nocapture 2>&1 | tee patched-rust-results/cargo.log
           cargo +1.90.0 check --locked --manifest-path .nti-patched/ube-foundation/Cargo.toml --features python 2>&1 | tee patched-rust-results/python-build.log
       - uses: actions/upload-artifact@v4
         if: always()
