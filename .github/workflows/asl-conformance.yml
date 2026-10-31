@@ -24,3 +24,47 @@ jobs:
 
       - name: Run LGD Transition Sidecar
         run: python conformance/transition_sidecar.py --selftest
+
+  rust-regressions:
+    name: Pinned Rust enforcement regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout candidate tests
+        uses: actions/checkout@v4
+
+      - name: Checkout pinned engine
+        uses: actions/checkout@v4
+        with:
+          repository: abisheakp197/Neutral-Trust-Infrastructure
+          ref: 308fd1c95f2c2f975e8b6b6c5e7ccba0e4d7b203
+          path: .nti-engine
+          persist-credentials: false
+
+      - name: Install declared Rust toolchain
+        run: rustup toolchain install 1.90.0 --profile minimal
+
+      - name: Verify pin and stage integration tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C .nti-engine rev-parse HEAD)" = "308fd1c95f2c2f975e8b6b6c5e7ccba0e4d7b203"
+          cp conformance/rust/nti_regressions.rs .nti-engine/ube-foundation/tests/nti_conformance_regressions.rs
+
+      - name: Run Rust regression cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p rust-regression-results
+          rustc +1.90.0 -Vv > rust-regression-results/toolchain.txt
+          cargo +1.90.0 --version >> rust-regression-results/toolchain.txt
+          sha256sum .nti-engine/ube-foundation/Cargo.lock conformance/rust/nti_regressions.rs > rust-regression-results/SHA256SUMS.txt
+          cargo +1.90.0 test --locked --manifest-path .nti-engine/ube-foundation/Cargo.toml --test nti_conformance_regressions -- --nocapture 2>&1 | tee rust-regression-results/cargo.log
+
+      - name: Retain execution evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pinned-rust-regression-results
+          path: rust-regression-results/
+          if-no-files-found: warn
