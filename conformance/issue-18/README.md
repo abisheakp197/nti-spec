@@ -14,7 +14,7 @@ Shared test vectors contributed for #18:
 
 These are generated, not hand-written. The deterministic generator and a test that
 regenerates them byte-for-byte and checks each against a working harness are at
-https://github.com/chopmob-cloud/algovoi-ube (`scripts/gen_issue18_vectors.py`,
+[algovoi-ube](https://github.com/chopmob-cloud/algovoi-ube) (`scripts/gen_issue18_vectors.py`,
 `vectors/issue-18/`, `tests/test_issue18_vectors.py`).
 
 **License:** these vectors are contributed under Apache-2.0
