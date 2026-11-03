@@ -152,7 +152,7 @@ The state-machine sequence, the `resume_basis` field, and the `incomplete_check`
 - **Specification:** <https://github.com/zhaoxinghua09-cell/nti-lgd-transition-contract/blob/679b6e4445fb84e26cc051cda3b0ebed3d5526c3/nti-transition-contract-spec-v0.1.4.md>
 - **Reference implementation:** `transition_sidecar.py` (merged, running in CI)
 
-The two finish-or-stop contracts derived from this spec — `FINISH_THEN_STOP` and `STOP_AT_CHECKPOINT` — are exercised as conformance cases in the NTI conformance suite (PR #206, Linux Foundation lab).
+Tymofii (aeoess) has contributed **candidate** test vectors for the two finish-or-stop contracts `FINISH_THEN_STOP` and `STOP_AT_CHECKPOINT` in [PR #206](https://github.com/Agent-Authority-Conformance/aps-conformance-suite/pull/206) to the APS conformance suite, derived from v0.1.4 and the public-agentprotocol thread (0108/0088/0090/0121). The cases are **candidates for review** — the author states no runtime has been run against them and they are not a conformance result.
 
 > **Status note:** v0.1.4 is published as "draft for comment". It is adopted here as the working normative basis for the §6 state machine; any future ratified revision supersedes this reference.
 
