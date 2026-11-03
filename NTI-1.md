@@ -2,6 +2,8 @@
 
 **License:** CC BY 4.0 | **Version:** 1.0.0-draft
 
+> **Status (read first).** This is a *draft proposal* (version 1.0.0-draft) under public discussion, principally in the W3C AI Agent Protocol Community Group (public-agentprotocol). It is **not a ratified standard** and not the output of any accredited standards-development organization; "Standard 1" and "NTI Foundation" are working names of this draft project, not accreditation claims. Normative language (MUST/SHOULD) should be read as proposal language pending community review.
+
 ## Table of Contents
 
 1. [Introduction](#1-introduction)
@@ -158,7 +160,7 @@ NTI-1 standardizes interoperability with the ASL Conformance Kit. The NTI CI/CD 
 The reference implementation is `ube-foundation`.
 
 * **PyPI:** <https://pypi.org/project/ube-foundation/>
-* **crates.io:** <https://crates.io/crates/ube-foundation>
+* **crates.io:** link removed — the ube-foundation crate page was reported broken on the public-agentprotocol list (2026-10-30); the PyPI reference above remains.
 * **Repository:** <https://github.com/abisheakp197/Neutral-Trust-Infrastructure>
 
 Framework Integrations: `langchain-nti`, `crewai-nti`, `autogen-nti`.

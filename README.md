@@ -43,7 +43,7 @@ NTI-1 specifies the **5 core pillars** that any compliant AI agent system MUST i
 
 ### 1. Reference SDKs & Integrations
 
-The reference SDK implementation is [`ube-foundation`](https://pypi.org/project/ube-foundation/), available on PyPI and crates.io.
+The reference SDK implementation is [`ube-foundation`](https://pypi.org/project/ube-foundation/), available on PyPI (the crates.io page was reported broken on the public-agentprotocol list on 2026-10-30 and is no longer linked).
 
 Framework integrations:
 
