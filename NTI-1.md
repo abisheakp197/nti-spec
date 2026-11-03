@@ -30,7 +30,8 @@ This document specifies NTI-1, the foundational open standard for post-quantum, 
 * **Capability:** An explicit permission granted to an agent to perform a specific class of actions.
 * **Caveat:** A condition attached to a capability (e.g., Expires, ValueLimit).
 * **Trust Engine:** The component that evaluates an action against policy.
-* **Merkle Chain:** A cryptographic hash chain over a sequence of events.
+* **Append-only hash chain:** A sequence of events in which each event commits to its predecessor's hash. This is the Pillar 4 audit trail.
+* **Merkle accumulator:** A tree whose root commits to a set and changes on revocation. This is the Section 6 revocation registry.
 * **PQC:** Post-Quantum Cryptography.
 * **Dilithium5:** CRYSTALS-Dilithium5, a NIST Level 5 post-quantum signature algorithm.
 
@@ -56,6 +57,7 @@ This document specifies NTI-1, the foundational open standard for post-quantum, 
 
 * Agents possess zero inherent permissions. All capabilities MUST be granted.
 * Capability grants MUST support at least these caveats: `Expires`, `MaxExecutions`, `ValueLimit`, `PathRestricted`.
+* `Expires` is an RFC 3339 instant evaluated against the verifier's clock; once passed, the grant MUST be denied (not paused). `MaxExecutions` is a hard count enforced across concurrent calls; the (N+1)th execution under `MaxExecutions = N` MUST be denied. Renewal issues a new grant and MUST NOT extend an existing one in place.
 * Policy evaluation MUST return a decision (Allow or Deny) with a reason.
 * Denied actions MUST NOT be executed under any circumstances.
 
@@ -68,6 +70,7 @@ This document specifies NTI-1, the foundational open standard for post-quantum, 
 * Multi-agent decisions MUST support threshold signature collection.
 * Each vote MUST contain: `(voter_id, request_id, decision, outcome_hash, signature)`.
 * The system MUST verify: no duplicate votes, threshold agreement, and matching outcome hashes.
+* Duplicate votes from a single `voter_id` MUST NOT satisfy the threshold (see `conformance/issue-18/duplicate_vote.json`).
 * The threshold MUST be configurable (RECOMMENDED: 2/3 majority).
 
 ### 3.4 Pillar 4: Audit
@@ -76,9 +79,11 @@ This document specifies NTI-1, the foundational open standard for post-quantum, 
 
 **Specification:**
 
-* Audit records MUST be chained via SHA-256 Merkle chain.
+* Audit records MUST form an append-only SHA-256 hash chain (an append-only hash chain, not a Merkle tree; see Terminology and Section 6 for the Merkle accumulator).
 * Each audit event MUST include: Event ID, Agent ID, Action hash, Decision, Reason, Timestamp, Parent hash, Event hash.
-* Tampering with any past event MUST cause verification to fail.
+* The `Event hash` MUST be SHA-256 over the RFC 8785 (JCS) canonical JSON of the ordered fields above. Implementations MUST NOT build the preimage by joining fields with a delimiter: a field value that contains the delimiter makes two different events produce the same preimage (see `conformance/issue-18/preimage_reproducibility.json`).
+* Tampering with any past event MUST cause verification to fail (see `conformance/issue-18/tamper_detection.json`).
+* A truncated log MUST NOT be accepted as complete: link verification alone passes a valid prefix, so completeness MUST be anchored to the expected length or final head (see `conformance/issue-18/truncation.json` and T-4.1).
 
 ### 3.5 Pillar 5: Persistence
 
@@ -92,7 +97,7 @@ This document specifies NTI-1, the foundational open standard for post-quantum, 
 
 ## 4. Compliance Levels
 
-* **Level 1 (Basic):** Pillars 1 and 4 REQUIRED. Suitable for internal tooling.
+* **Level 1 (Basic, Audit-Only Profile):** Pillars 1 and 4 REQUIRED. This profile records and verifies decisions but does not evaluate policy (Pillar 2); it MUST be labelled Audit-Only so the absence of governance is explicit rather than implied. Suitable for internal tooling.
 * **Level 2 (Standard):** All 5 Pillars REQUIRED. Suitable for regulated industries.
 * **Level 3 (Enterprise):** All 5 Pillars + HSM key storage, SOC 2 Type II, ISO 27001, and 99.99% availability SLA.
 
@@ -112,6 +117,8 @@ To enforce continuous runtime revocation without corrupting atomic execution, NT
 
 `REGISTERED -> GATE_PASSED -> ACTIVE -> ANOMALY -> PAUSE -> ROLLBACK -> REVERIFY -> RESUMED`
 
+> **Reference (draft for comment).** The state-machine logic and the `resume_basis` field below are drawn from the *NTI x LGD transition-contract spec - v0.1.4*, prepared by Xinghua Zhao (2026-10-30). That document is **draft for comment and explicitly "not agreed" by either side** (see its sec.0.1 / sec.0.3); it carries no standards-body weight outside its originating thread. It is linked here as a working reference for implementers, not as a ratified normative annex. Canonical, byte-for-byte copy: <https://github.com/zhaoxinghua09-cell/nti-lgd-transition-contract/blob/679b6e4445fb84e26cc051cda3b0ebed3d5526c3/nti-transition-contract-spec-v0.1.4.md>
+
 ### 6.1 Fail-Closed Semantics (`incomplete_check`)
 
 When a revocation registry or trust authority is unreachable, the system MUST enforce fail-closed execution. If a status check cannot be completed, the runtime MUST emit an `incomplete_check` and halt. The `reason` field MUST be set to one of the following:
@@ -121,6 +128,34 @@ When a revocation registry or trust authority is unreachable, the system MUST en
 * `internal_error`: Unhandled exception during status resolution.
 
 When `incomplete_check` is encountered, the runtime sidecar MUST NOT allow the action to proceed.
+
+### 6.2 Resume Receipt - the `resume_basis` field
+
+When the `REVERIFY -> RESUMED` edge is taken, the RESUME receipt MUST carry a `resume_basis` value from the closed set:
+
+* `evidence` - the registered restore condition was verified in full (evidence list, verifier role, validity window): the condition that caused the halt was confirmed restored.
+* `exemption` - an accountability layer accepted the risk; the reason is recorded, **not evaluated**. Both values permit `RESUMED`.
+
+The field adds to the RESUME receipt only; it does not add, remove, or rename a state, and the sec.6 transition line is unchanged.
+
+**Exemption boundaries (MUST be in the schema):**
+
+* `exemption_covers = policy_violation`
+* `exemption_does_not_cover = authority_revoked, authority_not_determined`
+
+`authority_revoked` is the issuing authority's decision, not the executing side's; a signed justification cannot un-revoke it. `authority_not_determined` is an absence of information (registry unreachable / stale root), not a judgment; a signature cannot convert "unknown" into "known". An exemption MUST NOT buy back the fail-closed property: `authority_revoked` and `authority_not_determined` MUST NOT be resumed on `exemption`.
+
+### 6.3 Normative References — LGD Transition Contract
+
+The state-machine sequence, the `resume_basis` field, and the `incomplete_check` reason set defined in §6.1–§6.2 are normatively specified in the *NTI x LGD transition-contract spec — v0.1.4* (Xinghua Zhao, 2026-10-30). Canonical, byte-for-byte copy:
+
+- **Specification:** <https://github.com/zhaoxinghua09-cell/nti-lgd-transition-contract/blob/679b6e4445fb84e26cc051cda3b0ebed3d5526c3/nti-transition-contract-spec-v0.1.4.md>
+- **Reference implementation:** `transition_sidecar.py` (merged, running in CI)
+
+The two finish-or-stop contracts derived from this spec — `FINISH_THEN_STOP` and `STOP_AT_CHECKPOINT` — are exercised as conformance cases in the NTI conformance suite (PR #206, Linux Foundation lab).
+
+> **Status note:** v0.1.4 is published as "draft for comment". It is adopted here as the working normative basis for the §6 state machine; any future ratified revision supersedes this reference.
+
 
 ## 7. Ecosystem Interoperability (ASL Conformance Kit)
 
@@ -150,7 +185,7 @@ Framework Integrations: `langchain-nti`, `crewai-nti`, `autogen-nti`.
 
 ## 10. Governance
 
-The NTI-1 specification is stewarded by the NTI Foundation. Proposed changes are submitted as RFCs. Amendments require public comment and a 30-day review period. The standard MUST remain neutral and MUST NOT favor any single vendor or jurisdiction.
+The NTI-1 specification is stewarded by the NTI Foundation. Proposed changes are submitted as RFCs. Amendments require public comment and a 30-day review period. The standard MUST remain neutral and MUST NOT favor any single vendor or jurisdiction. The NTI Foundation stewards this specification but does not itself issue certifications; certification is granted by the independent third-party auditor named in Section 9, keeping stewardship and certification separate.
 
 ## 11. Security Considerations
 
