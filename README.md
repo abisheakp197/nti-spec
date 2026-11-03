@@ -1,5 +1,7 @@
 # NTI Specification
 
+> **Status (read first).** This is a *draft proposal* (version 1.0.0-draft) under public discussion, principally in the W3C AI Agent Protocol Community Group (public-agentprotocol). It is **not a ratified standard** and not the output of any accredited standards-development organization; "Standard 1" and "NTI Foundation" are working names of this draft project, not accreditation claims. Normative language (MUST/SHOULD) should be read as proposal language pending community review.
+
 [![NTI Verified](https://img.shields.io/badge/NTI_Score-83%2F100-brightgreen)](https://nti-registry.vercel.app)
 
 ## Neutral Trust Infrastructure — Standard 1
@@ -43,7 +45,7 @@ NTI-1 specifies the **5 core pillars** that any compliant AI agent system MUST i
 
 ### 1. Reference SDKs & Integrations
 
-The reference SDK implementation is [`ube-foundation`](https://pypi.org/project/ube-foundation/), available on PyPI and crates.io.
+The reference SDK implementation is [`ube-foundation`](https://pypi.org/project/ube-foundation/), available on PyPI (the crates.io page was reported broken on the public-agentprotocol list on 2026-10-30 and is no longer linked).
 
 Framework integrations:
 
