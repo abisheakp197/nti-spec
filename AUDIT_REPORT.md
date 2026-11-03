@@ -34,7 +34,7 @@ All identified deficiencies have been remediated, verified, and automated via co
 
 ### 2. Dead Links & URL Validation
 
-- **Status:** CORRECTED — an earlier revision claimed "18 Links Checked, 18 HTTP 200 / Valid"; one of those links (crates.io/ube-foundation) was subsequently found broken and is pending removal/replacement. Accurate status: PASSED WITH ONE KNOWN-BROKEN LINK (all other links returned HTTP 200 at audit time).
+- **Status:** CORRECTED — an earlier revision claimed a full 18-of-18 external-link pass; one of those links (crates.io/ube-foundation) was subsequently found broken and is pending removal/replacement. Accurate status: PASSED WITH ONE KNOWN-BROKEN LINK (all other links returned HTTP 200 at audit time).
 - **Findings:** Standardized HTTP headers were required to handle rate-limiting and browser user-agent requirements on package registries (crates.io, PyPI).
 - **Remediation:** Created `scripts/check_links.py` with custom User-Agent headers. External and relative internal links return HTTP 200 or point to verified local files, with the known-broken crates.io/ube-foundation exception noted above pending fix.
 
