@@ -147,7 +147,6 @@ The field adds to the RESUME receipt only; it does not add, remove, or rename a 
 
 `authority_revoked` is the issuing authority's decision, not the executing side's; a signed justification cannot un-revoke it. `authority_not_determined` is an absence of information (registry unreachable / stale root), not a judgment; a signature cannot convert "unknown" into "known". An exemption MUST NOT buy back the fail-closed property: `authority_revoked` and `authority_not_determined` MUST NOT be resumed on `exemption`.
 
- main
 ### 6.3 Normative References — LGD Transition Contract
 
 The state-machine sequence, the `resume_basis` field, and the `incomplete_check` reason set defined in §6.1–§6.2 are normatively specified in the *NTI x LGD transition-contract spec — v0.1.4* (Xinghua Zhao, 2026-10-30). Canonical, byte-for-byte copy:
@@ -159,8 +158,6 @@ Tymofii (aeoess) has contributed **candidate** test vectors for the two finish-o
 
 > **Status note:** v0.1.4 is published as "draft for comment". It is adopted here as the working normative basis for the §6 state machine; any future ratified revision supersedes this reference.
 
-
- main
 ## 7. Ecosystem Interoperability (ASL Conformance Kit)
 
 NTI-1 standardizes interoperability with the ASL Conformance Kit. The NTI CI/CD pipeline executes ASL static test vectors to verify agent sandbox behavior and dynamic runtime drift.
