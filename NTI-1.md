@@ -147,6 +147,17 @@ The field adds to the RESUME receipt only; it does not add, remove, or rename a 
 
 `authority_revoked` is the issuing authority's decision, not the executing side's; a signed justification cannot un-revoke it. `authority_not_determined` is an absence of information (registry unreachable / stale root), not a judgment; a signature cannot convert "unknown" into "known". An exemption MUST NOT buy back the fail-closed property: `authority_revoked` and `authority_not_determined` MUST NOT be resumed on `exemption`.
 
+### 6.3 Normative References — LGD Transition Contract
+
+The state-machine sequence, the `resume_basis` field, and the `incomplete_check` reason set defined in §6.1–§6.2 are normatively specified in the *NTI x LGD transition-contract spec — v0.1.4* (Xinghua Zhao, 2026-10-30). Canonical, byte-for-byte copy:
+
+* **Specification:** <https://github.com/zhaoxinghua09-cell/nti-lgd-transition-contract/blob/679b6e4445fb84e26cc051cda3b0ebed3d5526c3/nti-transition-contract-spec-v0.1.4.md>
+* **Reference implementation:** `lgd-medai-demo` (`lgd_medai_demo.py`, zero-dependency, independently verifiable via VERIFICATION.md) — <https://github.com/zhaoxinghua09-cell/lgd-medai-demo>
+
+Tymofii (aeoess) has contributed **candidate** test vectors for the two finish-or-stop contracts `FINISH_THEN_STOP` and `STOP_AT_CHECKPOINT` in [PR #206](https://github.com/Agent-Authority-Conformance/aps-conformance-suite/pull/206) to the APS conformance suite, derived from v0.1.4 and the public-agentprotocol thread (0108/0088/0090/0121). The cases are **candidates for review** — the author states no runtime has been run against them and they are not a conformance result.
+
+> **Status note:** v0.1.4 is published as "draft for comment". It is adopted here as the working normative basis for the §6 state machine; any future ratified revision supersedes this reference.
+
 ## 7. Ecosystem Interoperability (ASL Conformance Kit)
 
 NTI-1 standardizes interoperability with the ASL Conformance Kit. The NTI CI/CD pipeline executes ASL static test vectors to verify agent sandbox behavior and dynamic runtime drift.

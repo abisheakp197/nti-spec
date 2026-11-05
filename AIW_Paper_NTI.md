@@ -2,7 +2,7 @@
 
 **Author:** Abisheak P.
 **Date:** October 28, 2026
-**Submission:** AIW #3 Book of Proceedings (Delegation and Authorization Cluster)
+**Session proposal:** AIW #3 (Delegation and Authorization Cluster). Note: AIW #3 uses Open Space Technology; the Book of Proceedings is post-event collaborative session notes, not a peer-reviewed submission track.
 **License:** CC BY 4.0
 
 ## Abstract
@@ -76,13 +76,13 @@ Requiring an immediate `PAUSE` on `incomplete_check` prevents silent execution u
 
 ## 5. Ecosystem Interoperability: ASL Conformance Kit
 
-To demonstrate multi-environment interoperability and rigorous safety bounds, NTI has successfully integrated the ASL (Agent Security Lab) Conformance Kit into its automated CI/CD pipeline.
+To demonstrate multi-environment interoperability and rigorous safety bounds, NTI is designed to pair with a local conformance lab — referred to here as ASL (Agent Security Lab), a local containment environment distinct from Ant Group's Agent Security Link (ASL) protocol. Automated CI integration is planned; no CI run logs are published at the time of writing.
 
 ### Test Lab vs. Cross-Enterprise Engine
 
 The integration establishes a clear architectural distinction between local containment and cross-enterprise trust:
 
-* **ASL (Local Containment / The Test Lab):** Provides kernel-level egress confinement, OS-level sandbox isolation, and simulated 700-agent swarm stress testing to ensure local agent bounds are enforced.
+* **ASL (Local Containment / The Test Lab):** Designed to provide kernel-level egress confinement, OS-level sandbox isolation, and sandbox-based stress testing to ensure local agent bounds are enforced. A 700-agent swarm benchmark is a design target; it has not been run or published.
 * **NTI (Cross-Enterprise Trust / The Engine):** Provides the distributed cryptographic runtime engine, maintaining principal-bound post-quantum identity, BFT multi-agent consensus, and cross-organization Merkle audit logs.
 
 ### Interoperability via AF_UNIX Sockets
@@ -93,7 +93,7 @@ ASL local sandboxes interoperate with the NTI runtime engine via high-throughput
 
 Under EU consumer law (Directive 2011/83/EU, Art. 8(2)), merchants must prove explicit acknowledgment of an order. If an agent places an order, the merchant must cryptographically prove *which human* delegated the authority. HDP records the intent, but NTI enforces the boundary. Together, they create a court-admissible SOC2 and EU AI Act compliance stack.
 
-## 7. The NTI-1 Standard (5 Pillars)
+## 7. The NTI-1 Draft Specification (5 Pillars)
 
 To ensure enterprise compliance, the NTI-1 specification defines five core pillars:
 
@@ -109,7 +109,7 @@ NTI does not replace HDP, OAuth, or ZCAP. It is the neutral enforcement layer th
 
 ---
 
-**The Standard (NTI-1 Spec):** <https://github.com/abisheakp197/nti-spec>
+**Draft Specification (NTI-1):** <https://github.com/abisheakp197/nti-spec>
 
 **Reference Implementation:** <https://github.com/abisheakp197/Neutral-Trust-Infrastructure>
 

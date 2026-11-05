@@ -1,7 +1,7 @@
 # Enterprise Audit Report: NTI-1 Specification
 
 **Repository:** `nti-spec`
-**Specification:** NTI-1 (Neutral Trust Infrastructure — Standard 1)
+**Specification:** NTI-1 (Neutral Trust Infrastructure — draft proposal; not a ratified standard)
 **Auditor:** Principal Security Engineer & Standards Architect
 **Audit Status:** PASSED (0 Critical, 0 High Findings)
 
@@ -34,9 +34,9 @@ All identified deficiencies have been remediated, verified, and automated via co
 
 ### 2. Dead Links & URL Validation
 
-- **Status:** PASSED (18 Links Checked, 18 HTTP 200 / Valid)
+- **Status:** CORRECTED — an earlier revision claimed a full 18-of-18 external-link pass; one of those links (crates.io/ube-foundation) was subsequently found broken and is pending removal/replacement. Accurate status: PASSED WITH ONE KNOWN-BROKEN LINK (all other links returned HTTP 200 at audit time).
 - **Findings:** Standardized HTTP headers were required to handle rate-limiting and browser user-agent requirements on package registries (crates.io, PyPI).
-- **Remediation:** Created `scripts/check_links.py` with custom User-Agent headers. All 18 external and relative internal links return HTTP 200 or point to verified local files.
+- **Remediation:** Created `scripts/check_links.py` with custom User-Agent headers. External and relative internal links return HTTP 200 or point to verified local files, with the known-broken crates.io/ube-foundation exception noted above pending fix.
 
 ### 3. Code Block Execution
 
