@@ -33,6 +33,9 @@ jobs:
       - name: Run Markdown Linter
         run: markdownlint "*.md" "**/*.md"
 
+      - name: Install Python dependencies
+        run: pip install requests
+
       - name: Run Link Checker
         run: python3 scripts/check_links.py
 
