@@ -132,7 +132,7 @@ A delegation issues authority from an issuer principal to a subject agent, attac
       "/accounts/operations/*"
     ]
   },
-  "revocation_registry_uri": "https://registry.nti.internal/revocation/v1/merkle-root",
+  "revocation_registry_uri": "urn:nti:revocation-registry:merkle-root",
   "algorithm": "CRYSTALS-Dilithium5",
   "issuer_signature": "3045022100e4...dsa87_signature_bytes..."
 }
