@@ -28,7 +28,7 @@ jobs:
   rust-regressions:
     name: Original baseline must reproduce both defects
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     steps:
       - name: Checkout candidate tests
         uses: actions/checkout@v4
@@ -43,6 +43,11 @@ jobs:
 
       - name: Install declared Rust toolchain
         run: rustup toolchain install 1.90.0 --profile minimal
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ".nti-engine/ube-foundation -> target"
 
       - name: Verify pin and stage integration tests
         shell: bash
@@ -84,7 +89,7 @@ jobs:
   rust-patched-engine:
     name: Candidate core fix and regression controls
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -93,8 +98,15 @@ jobs:
           ref: 308fd1c95f2c2f975e8b6b6c5e7ccba0e4d7b203
           path: .nti-patched
           persist-credentials: false
+          
       - name: Install declared Rust toolchain
         run: rustup toolchain install 1.90.0 --profile minimal --component rustfmt
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ".nti-patched/ube-foundation -> target"
+
       - name: Verify baseline and apply candidate patch
         run: |
           set -euo pipefail
@@ -102,6 +114,7 @@ jobs:
           git -C .nti-patched apply --check "$GITHUB_WORKSPACE/conformance/rust/patches/issuer-and-quorum.patch"
           git -C .nti-patched apply "$GITHUB_WORKSPACE/conformance/rust/patches/issuer-and-quorum.patch"
           cmp conformance/rust/nti_regressions.rs .nti-patched/ube-foundation/tests/nti_conformance_regressions.rs
+          
       - name: Compile and run core tests and regression controls
         run: |
           set -euo pipefail
@@ -110,6 +123,7 @@ jobs:
           sha256sum conformance/rust/patches/issuer-and-quorum.patch .nti-patched/ube-foundation/Cargo.lock > patched-rust-results/SHA256SUMS.txt
           cargo +1.90.0 test --locked --manifest-path .nti-patched/ube-foundation/Cargo.toml --lib --tests -- --nocapture 2>&1 | tee patched-rust-results/cargo.log
           cargo +1.90.0 check --locked --manifest-path .nti-patched/ube-foundation/Cargo.toml --features python 2>&1 | tee patched-rust-results/python-build.log
+          
       - uses: actions/upload-artifact@v4
         if: always()
         with:
