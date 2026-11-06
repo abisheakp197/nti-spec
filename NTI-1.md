@@ -164,6 +164,19 @@ An invocation passes capability delegation chains alongside concrete operation a
 }
 ```
 
+### 3.7 The NTI Sidecar
+
+The NTI sidecar sits between the agent and the network. It addresses two primary threats: agents going rogue and agents failing to keep secrets. The sidecar holds the agent's secret keys, signs on behalf of the agent, and enforces a policy on what goes in and out of the agent. The agent itself never has access to the raw secret keys, protecting it from prompt injection attacks that attempt to exfiltrate credentials.
+
+```mermaid
+flowchart LR
+    AGENT["Agent"] -->|"action request (unsigned)"| SIDECAR["NTI Sidecar"]
+    SIDECAR -->|"signed action + policy check"| NETWORK["Network / Target Resource"]
+    NETWORK -->|"response"| SIDECAR
+    SIDECAR -->|"policy-filtered response"| AGENT
+    KEYS["Agent secret keys (ML-DSA-87 (Dilithium5))"] -.->|"held by, never exposed to agent"| SIDECAR
+```
+
 ## 4. Compliance Levels
 
 * **Level 1 (Basic, Audit-Only Profile):** Pillars 1 and 4 REQUIRED. This profile records and verifies decisions but does not evaluate policy (Pillar 2); it MUST be labelled Audit-Only so the absence of governance is explicit rather than implied. Suitable for internal tooling.
