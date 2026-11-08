@@ -59,13 +59,12 @@ The resource-side verifier then independently recomputes the payload digest, the
 
 ## 4. Initial Proposed TSC
 
-Per the principles of explicit consent and decentralized governance, the following individuals have explicitly accepted a seat on the initial proposed Technical Steering Committee. The TSC represents multiple independent organizations: NTI (Abisheak P.), UIBC (Steven Zhao), and VATE (Takao Sato).
+Per the principles of explicit consent and decentralized governance, the following individuals are proposed for the initial Technical Steering Committee. A seat is recorded only on written confirmation; an invitation is not a confirmed seat.
 
 - **Abisheak P.** (Lead Architect, NTI)
-- **Steven Zhao (Xinghua)** (UIBC — evidence packaging & lifecycle governance; ORCID: 0009-0001-0512-1237)
-- **Takao Sato (Poke-nushi)** (VATE — verifier-side receiving layer; Poke-nushi/Verifiable-Agent-Trust-Envelope: <https://github.com/Poke-nushi/Verifiable-Agent-Trust-Envelope>)
+- **Steven Zhao (Xinghua)** (Individual Researcher; ORCID: 0009-0001-0512-1237; invited, pending written confirmation; not representing UIBC)
 
-These three projects are independently governed, with separate repositories and release cadences. No single organization holds more than one seat. The maintainers are committed to growing the TSC further and increasing organizational diversity as the contributor base expands.
+Participants are drawn from independent projects, each with its own repository and release cadence. Participants act in their own capacity: no organization is represented, and no single organization holds more than one seat. The maintainers are committed to growing the TSC further and increasing organizational diversity as the contributor base expands.
 
 ## 5. External Advisors
 
@@ -85,5 +84,7 @@ The following individuals have made significant technical contributions to the N
 NTI is committed to absolute vendor neutrality. The specification is licensed under CC BY 4.0 and the reference implementation under Apache 2.0. The conformance lab remains strictly independent from the TSC to ensure separation of powers. Silence or past collaboration does not count as consent; any changes to the shared governance map require explicit confirmation from the project maintainer.
 
 **Contribution policy.** NTI uses the Developer Certificate of Origin (DCO) exclusively and does not require a CLA. DCO enforcement is active via GitHub Actions for all new contributions. The 227 historical commits from the initial prototype phase (prior to DCO enforcement) are disclosed.
+
+**Standards status.** The NTI-1 specification is an input contribution / Discussion Draft to the W3C Agent Protocol Community Group. It is not a W3C deliverable, Recommendation, or official interoperability artifact, and no W3C endorsement or "official" status is claimed. Any W3C relationship is limited to discussion on the Community Group's public list.
 
 Project governance — including TSC composition and the rough-consensus decision process — is documented in the reference implementation repository (`GOVERNANCE.md`, `MAINTAINERS.md`).
