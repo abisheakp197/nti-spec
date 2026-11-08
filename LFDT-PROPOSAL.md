@@ -1,4 +1,6 @@
-# Project Proposal: Neutral Trust Infrastructure (NTI) to LF Decentralized Trust
+# LFDT Lab Proposal: Neutral Trust Infrastructure (NTI)
+
+**Status:** LFDT Lab proposal. NTI is applying to become a Linux Foundation Decentralized Trust (LFDT) Lab, building on the Agent Authority Conformance lab. A Lab requires no endorsements and no TAC vote; it is established by two Lab Stewards (see `LFDT-LAB-PROPOSAL.md`). This revision supersedes the earlier incubation framing.
 
 ## 1. Project Description
 
@@ -85,6 +87,20 @@ NTI is committed to absolute vendor neutrality. The specification is licensed un
 
 **Contribution policy.** NTI uses the Developer Certificate of Origin (DCO) exclusively and does not require a CLA. DCO enforcement is active via GitHub Actions for all new contributions. The 227 historical commits from the initial prototype phase (prior to DCO enforcement) are disclosed.
 
-**Standards status.** The NTI-1 specification is an input contribution / Discussion Draft to the W3C Agent Protocol Community Group. It is not a W3C deliverable, Recommendation, or official interoperability artifact, and no W3C endorsement or "official" status is claimed. Any W3C relationship is limited to discussion on the Community Group's public list.
+**Standards status.** The NTI-1 specification is an input contribution / Discussion Draft to the W3C Agent Protocol Community Group. It is not a W3C deliverable, Recommendation, or official interoperability artifact, and no *organizational* W3C endorsement or "official" status is claimed. The endorsement in the "W3C Endorsement" section below is from an individual W3C member acting in their own capacity, not from the W3C or the Community Group.
 
 Project governance — including TSC composition and the rough-consensus decision process — is documented in the reference implementation repository (`GOVERNANCE.md`, `MAINTAINERS.md`).
+
+## 8. W3C Endorsement
+
+> "As a member of the W3C, I endorse the submission of NTI to the Linux Foundation Decentralized Trust. NTI provides the critical runtime enforcement layer the machine economy needs."
+>
+> — Atharv (W3C)
+
+This endorsement is offered by an individual W3C member in their own capacity. It is not an endorsement by the W3C, the W3C Agent Protocol Community Group, or any W3C Member organization, and it does not imply W3C review, approval, or standardization of NTI.
+
+## 9. Reviewer Boundaries
+
+Endorsement is opt-in and individually given. Projects and reviewers that have declined to endorse NTI are not listed anywhere in this proposal, and their prior participation, silence, or past collaboration is not represented as endorsement. Only explicit, written endorsements are recorded, and only with the endorser's consent.
+
+To keep the record accurate: **APS has reviewed the architectural alignment, but has not run the NTI test vectors.** No claim is made that APS (or any other project) has executed the NTI conformance vectors.
