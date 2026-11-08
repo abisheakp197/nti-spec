@@ -63,7 +63,7 @@ Per the principles of explicit consent and decentralized governance, the followi
 
 - **Abisheak P.** (Lead Architect, NTI)
 - **Steven Zhao (Xinghua)** (UIBC — evidence packaging & lifecycle governance; ORCID: 0009-0001-0512-1237)
-- **Takao Sato (Poke-nushi)** (VATE — verifier-side receiving layer)
+- **Takao Sato (Poke-nushi)** (VATE — verifier-side receiving layer; Poke-nushi/Verifiable-Agent-Trust-Envelope: <https://github.com/Poke-nushi/Verifiable-Agent-Trust-Envelope>)
 
 These three projects are independently governed, with separate repositories and release cadences. No single organization holds more than one seat. The maintainers are committed to growing the TSC further and increasing organizational diversity as the contributor base expands.
 
@@ -83,5 +83,7 @@ The following individuals have made significant technical contributions to the N
 ## 7. Vendor Neutrality & Governance
 
 NTI is committed to absolute vendor neutrality. The specification is licensed under CC BY 4.0 and the reference implementation under Apache 2.0. The conformance lab remains strictly independent from the TSC to ensure separation of powers. Silence or past collaboration does not count as consent; any changes to the shared governance map require explicit confirmation from the project maintainer.
+
+**Contribution policy.** NTI uses the Developer Certificate of Origin (DCO) exclusively and does not require a CLA. DCO enforcement is active via GitHub Actions for all new contributions. The 227 historical commits from the initial prototype phase (prior to DCO enforcement) are disclosed.
 
 Project governance — including TSC composition and the rough-consensus decision process — is documented in the reference implementation repository (`GOVERNANCE.md`, `MAINTAINERS.md`).
