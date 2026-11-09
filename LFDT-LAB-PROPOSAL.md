@@ -1,7 +1,7 @@
 # LFDT Lab Proposal: Neutral Trust Infrastructure (NTI)
 
 **Status:** Proposal to establish NTI as a Linux Foundation Decentralized Trust (LFDT) Lab.
-**Requested action:** None from the TAC. A Lab requires no endorsements and no TAC vote; it is established by two Lab Stewards.
+**Requested action:** None from the TAC. A Lab requires no endorsements and no TAC vote; it is governed by the LFDT Lab Stewards.
 
 ## Summary
 
@@ -25,12 +25,13 @@ NTI builds on the Agent Authority Conformance lab rather than competing with it.
 
 ## Lab Stewards
 
+This Lab will be governed by the LFDT Lab Stewards.
+
 | Steward | Affiliation |
 | :--- | :--- |
 | Abisheak P. | Neutral Trust Infrastructure (NTI) |
-| Tymofii Pidlisnyi | Agent Authority Conformance |
 
-The two stewards are drawn from two independent projects, each with its own repository and release cadence. Stewards act in their own capacity; no single organization holds more than one steward seat. The Lab is committed to adding stewards as the contributor base grows.
+Stewards act in their own capacity; no single organization holds more than one steward seat. The Lab is committed to adding stewards as the contributor base grows.
 
 ## Governance and Neutrality
 
@@ -40,11 +41,11 @@ The two stewards are drawn from two independent projects, each with its own repo
 
 ## What Is Requested
 
-Establish NTI as an LFDT Lab, co-stewarded by the two stewards named above. No TAC vote and no endorsements are required for a Lab. We ask only for the Lab to be recognized so the work has a neutral, durable home under LFDT.
+Establish NTI as an LFDT Lab, governed by the LFDT Lab Stewards. No TAC vote and no endorsements are required for a Lab. We ask only for the Lab to be recognized so the work has a neutral, durable home under LFDT.
 
 ## Next Steps
 
-1. Confirm the two Lab Stewards.
+1. Confirm the Lab Stewards.
 2. Recognize the Lab under LFDT.
 3. Publish the Lab's charter, repository, and conformance process.
 
