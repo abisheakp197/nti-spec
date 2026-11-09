@@ -49,11 +49,12 @@ The resource-side verifier then independently recomputes the payload digest, the
   and ML-DSA-87 signatures are **reproducible**: the verification procedure is
   fully specified and open, and the published public key lets any party check the
   signature without trusting us.
-- **Audit status stated plainly.** The project has completed an internal security
-  review (documented in `AUDIT_REPORT.md`). An **independent third-party audit has
-  not yet been completed**; commissioning one is an explicit roadmap item and a
-  criterion the maintainers intend to meet on the path to Graduated status. We
-  state this rather than overstate it.
+- **Audit status stated plainly.** An independent third-party audit has not yet
+  been formally commissioned. However, NTI has undergone a private, reproducible
+  security assessment using the AACP (REMORA) framework by Stian Skogbrott. The
+  findings were documented and are actively being remediated. Reference to the
+  REMORA assessment is provided as presented by its maintainer, including its
+  stated limitations, rather than as formal independent validation.
 - **Standards alignment.** Signatures use ML-DSA-87 (FIPS 204) and key
   encapsulation uses ML-KEM-1024 (FIPS 203), via widely used Rust crates
   (`pqcrypto-dilithium`, `pqcrypto-kyber`). We make no claim of formal
