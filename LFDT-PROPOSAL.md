@@ -64,7 +64,7 @@ The resource-side verifier then independently recomputes the payload digest, the
 Per the principles of explicit consent and decentralized governance, the following individuals are proposed for the initial Technical Steering Committee. A seat is recorded only on written confirmation; an invitation is not a confirmed seat.
 
 - **Abisheak P.** (Lead Architect, NTI)
-- **Steven Zhao (Xinghua)** — initial TSC seat of the proposed TSC. Independent researcher (ORCID: 0009-0001-0512-1237), writing in a personal capacity, not representing UIBC or any organization.
+- **Steven Zhao (Xinghua)** — initial TSC seat of the proposed TSC. Independent researcher (ORCID: 0009-0001-0512-1237). Writing in a personal capacity, with no organizational affiliation, and not representing any organization.
 
 Participants are drawn from independent projects, each with its own repository and release cadence. Participants act in their own capacity: no organization is represented, and no single organization holds more than one seat. The maintainers are committed to growing the TSC further and increasing organizational diversity as the contributor base expands.
 
