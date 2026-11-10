@@ -4,7 +4,8 @@
 
 ## Neutral Trust Infrastructure — Standard 1
 
-[![License: CSL 1.0](https://img.shields.io/badge/License-Community%20Specification%201.0-lightgrey.svg)](./LICENSE-SPEC)
+[![License: CSL 1.0](https://img.shields.io/badge/License-Community%20Specification%201.0-lightgrey.svg)](./LICENSE)
+[![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/10507/badge)](https://bestpractices.coreinfrastructure.org/projects/10507)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/abisheakp197/nti-spec/badge)](https://scorecard.dev/viewer/?uri=github.com/abisheakp197/nti-spec)
 [![NTI Version](https://img.shields.io/badge/NTI--1-v1.0.0--draft-blue.svg)](./VERSION)
 
@@ -64,17 +65,19 @@ python3 conformance/validate.py
 
 ## Governance & Contributing
 
-The NTI-1 specification is stewarded by the NTI Foundation and maintained under the Community Specification License 1.0 (CSL). See [LICENSE-SPEC](./LICENSE-SPEC).
+The NTI-1 specification is maintained under the Community Specification License 1.0 (CSL). See [LICENSE](./LICENSE) and the full text in [LICENSE-SPEC](./LICENSE-SPEC).
 
 Amendments are proposed via RFCs in the [rfcs/](./rfcs/) folder. Contribution rules, including the required DCO sign-off, are in [CONTRIBUTING.md](./CONTRIBUTING.md); the maintainer list is in [MAINTAINERS.md](./MAINTAINERS.md) and the decision process in [GOVERNANCE.md](./GOVERNANCE.md).
 
-NTI is applying to become a Linux Foundation Decentralized Trust (LFDT) Lab. The proposal is in [LFDT-LAB-PROPOSAL.md](./LFDT-LAB-PROPOSAL.md).
+The versioning and publication process for the specification is documented in [RELEASE.md](./RELEASE.md). Organizations and projects that implement or build on NTI-1 are listed in [ADOPTERS.md](./ADOPTERS.md).
+
+NTI is applying to become a Linux Foundation Decentralized Trust (LFDT) Lab. The proposal is in [LFDT-PROPOSAL.md](./LFDT-PROPOSAL.md); the current status against the LFDT requirements is in [LFDT-READINESS.md](./LFDT-READINESS.md).
 
 ---
 
 ## License
 
-The specification, conformance vectors, and normative documentation are licensed under the **Community Specification License 1.0 (CSL)**. See [LICENSE-SPEC](./LICENSE-SPEC).
+The specification, conformance vectors, and normative documentation are licensed under the **Community Specification License 1.0 (CSL)**. See [LICENSE](./LICENSE) and [LICENSE-SPEC](./LICENSE-SPEC).
 
 The reference implementation's source code is licensed separately under Apache-2.0. See [LICENSE](https://github.com/abisheakp197/Neutral-Trust-Infrastructure/blob/main/LICENSE) in the reference implementation repository.
 

@@ -1,0 +1,18 @@
+Copyright the Neutral Trust Infrastructure (NTI) contributors.
+
+This repository — the NTI-1 specification, its conformance vectors, and its
+normative documentation — is licensed under the **Community Specification
+License 1.0 (CSL)**.
+
+The full license text is in [`LICENSE-SPEC`](LICENSE-SPEC) in this directory.
+
+The CSL 1.0 is the specification license used by the Community Specification
+program and is not currently a license identifier recognized by SPDX. Tooling
+that maps a repository to an SPDX identifier (for example, GitHub's license
+detection) will therefore report this repository as "no license detected" or
+`NOASSERTION`. That is an artifact of SPDX recognition, not an absence of a
+license: the CSL 1.0 text in `LICENSE-SPEC` is the governing license.
+
+Source code and scripts in this repository (for example, under `scripts/` and
+`conformance/`) are provided under the same CSL 1.0 terms. The reference
+implementation is a separate repository, licensed under Apache-2.0.
