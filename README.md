@@ -66,7 +66,9 @@ python3 conformance/validate.py
 
 The NTI-1 specification is stewarded by the NTI Foundation and maintained under the Community Specification License 1.0 (CSL). See [LICENSE-SPEC](./LICENSE-SPEC).
 
-Amendments are proposed via RFCs in the [rfcs/](./rfcs/) folder.
+Amendments are proposed via RFCs in the [rfcs/](./rfcs/) folder. Contribution rules, including the required DCO sign-off, are in [CONTRIBUTING.md](./CONTRIBUTING.md); the maintainer list is in [MAINTAINERS.md](./MAINTAINERS.md) and the decision process in [GOVERNANCE.md](./GOVERNANCE.md).
+
+NTI is applying to become a Linux Foundation Decentralized Trust (LFDT) Lab. The proposal is in [LFDT-LAB-PROPOSAL.md](./LFDT-LAB-PROPOSAL.md).
 
 ---
 

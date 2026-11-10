@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # Keep GitHub Actions pinned SHAs current. This repository has no runtime
+  # dependency manifests; its tooling is Python and Node invoked by CI.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(ci)"
+    labels:
+      - dependencies
+      - github-actions

@@ -24,8 +24,27 @@ def check_links():
                 filepath = os.path.join(root, file)
                 with open(filepath, "r", encoding="utf-8") as f:
                     content = f.read()
-                    links = re.findall(r'\[([^\]]+)\]\((http[s]?://[^\)]+)\)', content)
-                    for text, url in links:
+                    links = re.findall(r'!?\[[^\]]*\]\(([^)\s]+)', content)
+                    for url in links:
+                        if url.startswith(("#", "mailto:", "data:")):
+                            continue
+                        # Relative links are validated against the local tree so
+                        # that a renamed or deleted file cannot silently break a
+                        # document.
+                        if not url.startswith(("http://", "https://")):
+                            target = url.split("#")[0].split("?")[0]
+                            if not target:
+                                continue
+                            if target.startswith("/"):
+                                resolved = os.path.join(".", target.lstrip("/"))
+                            else:
+                                resolved = os.path.normpath(
+                                    os.path.join(os.path.dirname(filepath), target))
+                            checked += 1
+                            if not os.path.exists(resolved):
+                                print(f"  [MISSING] {url} (in {filepath})")
+                                broken_links.append((filepath, url, "missing-file"))
+                            continue
                         checked += 1
                         try:
                             resp = session.get(url, timeout=20, allow_redirects=True)
