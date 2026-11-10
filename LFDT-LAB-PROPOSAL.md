@@ -37,8 +37,8 @@ Maintainers act in their own capacity; no single organization holds more than on
 
 ## Governance and Neutrality
 
-- The specification is licensed under CC BY 4.0 and the reference implementation under Apache-2.0.
-- Contributions use the Developer Certificate of Origin (DCO) exclusively; no CLA is required.
+- The specification is licensed under the Community Specification License 1.0 (CSL) and the reference implementation under Apache-2.0.
+- Code contributions use the Developer Certificate of Origin (DCO); no separate CLA is required for code. Specification contributions are made under the Community Specification License 1.0 (CSL) framework, which includes the Community Specification Contributor License Agreement.
 - The Lab does not require or record endorsements. Endorsement is opt-in and individually given, and no reviewer's participation, silence, or past collaboration is represented as endorsement.
 
 ## What Is Requested

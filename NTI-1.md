@@ -1,6 +1,6 @@
 # NTI-1 Specification: Neutral Trust Infrastructure - Standard 1
 
-**License:** CC BY 4.0 | **Version:** 1.0.0-draft
+**License:** Community Specification License 1.0 (CSL) | **Version:** 1.0.0-draft
 
 > **Status (read first).** This is a *draft proposal* (version 1.0.0-draft) under public discussion, principally in the W3C AI Agent Protocol Community Group (public-agentprotocol). It is **not a ratified standard** and not the output of any accredited standards-development organization; "Standard 1" and "NTI Foundation" are working names of this draft project, not accreditation claims. Normative language (MUST/SHOULD) should be read as proposal language pending community review.
 
