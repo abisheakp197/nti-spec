@@ -74,7 +74,7 @@ Amendments are proposed via RFCs in the [rfcs/](./rfcs/) folder.
 
 The specification, conformance vectors, and normative documentation are licensed under the **Community Specification License 1.0 (CSL)**. See [LICENSE-SPEC](./LICENSE-SPEC).
 
-The reference implementation's source code is licensed separately under Apache-2.0. See [LICENSE](./LICENSE) in the reference implementation repository.
+The reference implementation's source code is licensed separately under Apache-2.0. See [LICENSE](https://github.com/abisheakp197/Neutral-Trust-Infrastructure/blob/main/LICENSE) in the reference implementation repository.
 
 ---
 
