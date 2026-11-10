@@ -1,0 +1,23 @@
+Neutral Trust Infrastructure (NTI)
+Copyright 2025 The NTI Contributors
+
+The NTI-1 specification text, its conformance vectors, and the other normative
+documentation in this repository are licensed under the Community Specification
+License 1.0 (CSL). See the LICENSE-SPEC file for the full text.
+
+The reference implementation's source code is licensed separately under the
+Apache License, Version 2.0. See the LICENSE file in the reference implementation
+repository:
+
+    https://github.com/abisheakp197/Neutral-Trust-Infrastructure/blob/main/LICENSE
+
+---
+
+This product includes software developed as part of the NTI project
+(https://github.com/abisheakp197/nti-spec).
+
+The Community Specification License 1.0 text is Copyright 2020 Joint Development
+Foundation and is licensed under the Creative Commons Attribution 4.0
+International License (https://creativecommons.org/licenses/by/4.0/). That
+attribution requirement applies to the license text itself, not to the NTI-1
+specification, which is licensed under CSL 1.0.
