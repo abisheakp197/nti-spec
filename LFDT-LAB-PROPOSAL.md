@@ -5,7 +5,7 @@
 
 ## Summary
 
-Neutral Trust Infrastructure (NTI) is applying to become an LFDT Lab. The Lab builds on the existing **Agent Authority Conformance** lab, extending its authority-conformance work into runtime enforcement: verifying, at invocation time, that a specific action by a specific agent was authorized.
+Neutral Trust Infrastructure (NTI) is applying to become an LFDT Lab. The Lab extends published authority-conformance work into runtime enforcement: verifying, at invocation time, that a specific action by a specific agent was authorized. It references the published work of the **Agent Authority Conformance** project; it claims no formal relationship with that project.
 
 A Lab is the right vehicle for this work. It is a lightweight, low-ceremony home for a focused effort that already has a running reference implementation, a specification, and conformance vectors. It requires no endorsements and no TAC vote, which keeps the effort neutral and free of the endorsement politics that have surrounded adjacent proposals.
 
@@ -15,23 +15,25 @@ The Lab will host and steward:
 
 - The NTI specification (`NTI-1.md`) and its RFC process.
 - The reference implementation and its conformance vectors.
-- Cross-project conformance work with the Agent Authority Conformance lab, including shared test vectors for the authority-delegation boundary.
+- Conformance work that aligns with published authority-conformance work, including test vectors for the authority-delegation boundary.
 
 The Lab does not issue certifications and does not speak for any other project. Where an adjacent project already defines a format or identifier, the Lab adopts it rather than inventing a competing one.
 
-## Relationship to the Agent Authority Conformance Lab
+## Reference to Published Authority-Conformance Work
 
-NTI builds on the Agent Authority Conformance lab rather than competing with it. Agent Authority Conformance defines and tests what a valid authority delegation is; NTI provides the runtime enforcement point that checks such a delegation when an agent acts. The two layers compose: conformance defines the contract, NTI enforces it at the moment of action.
+NTI references the published work of the Agent Authority Conformance project rather than competing with it. Published authority-conformance work defines and tests what a valid authority delegation is; NTI provides the runtime enforcement point that checks such a delegation when an agent acts. The two layers compose: conformance defines the contract, NTI enforces it at the moment of action.
 
-## Lab Stewards
+No formal relationship between the two projects is claimed. The Agent Authority Conformance project does not participate in, sponsor, or endorse NTI; its published work is referenced for technical context only.
+
+## Maintainers
 
 This Lab will be governed by the LFDT Lab Stewards.
 
-| Steward | Affiliation |
+| Maintainer | Affiliation |
 | :--- | :--- |
 | Abisheak P. | Neutral Trust Infrastructure (NTI) |
 
-Stewards act in their own capacity; no single organization holds more than one steward seat. The Lab is committed to adding stewards as the contributor base grows.
+Maintainers act in their own capacity; no single organization holds more than one maintainer seat. The Lab is committed to adding maintainers as the contributor base grows.
 
 ## Governance and Neutrality
 
@@ -45,7 +47,7 @@ Establish NTI as an LFDT Lab, governed by the LFDT Lab Stewards. No TAC vote and
 
 ## Next Steps
 
-1. Confirm the Lab Stewards.
+1. Complete steward review of this proposal.
 2. Recognize the Lab under LFDT.
 3. Publish the Lab's charter, repository, and conformance process.
 
