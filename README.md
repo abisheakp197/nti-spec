@@ -4,7 +4,7 @@
 
 ## Neutral Trust Infrastructure — Standard 1
 
-[![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![License: CSL 1.0](https://img.shields.io/badge/License-Community%20Specification%201.0-lightgrey.svg)](./LICENSE-SPEC)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/abisheakp197/nti-spec/badge)](https://scorecard.dev/viewer/?uri=github.com/abisheakp197/nti-spec)
 [![NTI Version](https://img.shields.io/badge/NTI--1-v1.0.0--draft-blue.svg)](./VERSION)
 
@@ -64,7 +64,7 @@ python3 conformance/validate.py
 
 ## Governance & Contributing
 
-The NTI-1 specification is stewarded by the NTI Foundation and maintained under the Creative Commons Attribution 4.0 International (CC-BY-4.0) license.
+The NTI-1 specification is stewarded by the NTI Foundation and maintained under the Community Specification License 1.0 (CSL). See [LICENSE-SPEC](./LICENSE-SPEC).
 
 Amendments are proposed via RFCs in the [rfcs/](./rfcs/) folder.
 
@@ -72,7 +72,9 @@ Amendments are proposed via RFCs in the [rfcs/](./rfcs/) folder.
 
 ## License
 
-Creative Commons Attribution 4.0 International (CC-BY-4.0).
+The specification, conformance vectors, and normative documentation are licensed under the **Community Specification License 1.0 (CSL)**. See [LICENSE-SPEC](./LICENSE-SPEC).
+
+The reference implementation's source code is licensed separately under Apache-2.0. See [LICENSE](https://github.com/abisheakp197/Neutral-Trust-Infrastructure/blob/main/LICENSE) in the reference implementation repository.
 
 ---
 

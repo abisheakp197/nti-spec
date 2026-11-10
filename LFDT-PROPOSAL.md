@@ -1,6 +1,6 @@
 # LFDT Lab Proposal: Neutral Trust Infrastructure (NTI)
 
-**Status:** LFDT Lab proposal. NTI is applying to become a Linux Foundation Decentralized Trust (LFDT) Lab, building on the Agent Authority Conformance lab. A Lab requires no endorsements and no TAC vote; it is established by two Lab Stewards (see `LFDT-LAB-PROPOSAL.md`). This revision supersedes the earlier incubation framing.
+**Status:** LFDT Lab proposal. NTI is applying to become a Linux Foundation Decentralized Trust (LFDT) Lab, referencing the published work of the Agent Authority Conformance project. A Lab requires no endorsements and no TAC vote; it is governed by the LFDT Lab Stewards (see `LFDT-LAB-PROPOSAL.md`). This revision supersedes the earlier incubation framing.
 
 ## 1. Project Description
 
@@ -28,7 +28,7 @@ This separation is deliberate. The NTI sidecar does not sit on the critical path
 
 ## 3. Solution
 
-NTI consists of a reference implementation (Rust core with Python bindings, Apache-2.0) and a specification (CC BY 4.0), together with conformance vectors that any independent implementation can run against.
+NTI consists of a reference implementation (Rust core with Python bindings, Apache-2.0) and a specification (Community Specification License 1.0), together with conformance vectors that any independent implementation can run against.
 
 The sidecar constructs, for each outbound action:
 
@@ -49,11 +49,15 @@ The resource-side verifier then independently recomputes the payload digest, the
   and ML-DSA-87 signatures are **reproducible**: the verification procedure is
   fully specified and open, and the published public key lets any party check the
   signature without trusting us.
-- **Audit status stated plainly.** The project has completed an internal security
-  review (documented in `AUDIT_REPORT.md`). An **independent third-party audit has
-  not yet been completed**; commissioning one is an explicit roadmap item and a
-  criterion the maintainers intend to meet on the path to Graduated status. We
-  state this rather than overstate it.
+- **Audit status stated plainly.** An independent third-party audit has not yet
+  been formally commissioned. However, NTI has undergone a publicly published
+  security assessment using the AACP (REMORA) framework by Stian Skogbrott. The
+  findings are documented in the assessor's published report (available at:
+  <https://github.com/darklordVirtual/agent-authority-conformance/blob/main/publications/nti-witness-2026-11-07/REPORT.md>)
+  and are actively being remediated as a roadmap item toward Graduated status.
+  Reference to the REMORA assessment is provided as presented by its maintainer,
+  including its stated limitations (SECOND_IMPLEMENTATION / BCR-2), rather than
+  as formal independent validation.
 - **Standards alignment.** Signatures use ML-DSA-87 (FIPS 204) and key
   encapsulation uses ML-KEM-1024 (FIPS 203), via widely used Rust crates
   (`pqcrypto-dilithium`, `pqcrypto-kyber`). We make no claim of formal
@@ -83,11 +87,11 @@ The following individuals have made significant technical contributions to the N
 
 ## 7. Vendor Neutrality & Governance
 
-NTI is committed to absolute vendor neutrality. The specification is licensed under CC BY 4.0 and the reference implementation under Apache 2.0. The conformance lab remains strictly independent from the TSC to ensure separation of powers. Silence or past collaboration does not count as consent; any changes to the shared governance map require explicit confirmation from the project maintainer.
+NTI is committed to absolute vendor neutrality. The specification is licensed under the Community Specification License 1.0 (CSL) and the reference implementation under Apache 2.0. The conformance lab remains strictly independent from the TSC to ensure separation of powers. Silence or past collaboration does not count as consent; any changes to the shared governance map require explicit confirmation from the project maintainer.
 
-**Contribution policy.** NTI uses the Developer Certificate of Origin (DCO) exclusively and does not require a CLA. DCO enforcement is active via GitHub Actions for all new contributions. The 227 historical commits from the initial prototype phase (prior to DCO enforcement) are disclosed.
+**Contribution policy.** Code contributions use the Developer Certificate of Origin (DCO) exclusively; no separate CLA is required for code. Specification contributions are made under the Community Specification License 1.0 (CSL) framework, which includes the Community Specification Contributor License Agreement. DCO enforcement is active via GitHub Actions for all new contributions. The 227 historical commits from the initial prototype phase (prior to DCO enforcement) are disclosed.
 
-**Standards status.** The NTI-1 specification is an input contribution / Discussion Draft to the W3C Agent Protocol Community Group. It is not a W3C deliverable, Recommendation, or official interoperability artifact, and no *organizational* W3C endorsement or "official" status is claimed. The endorsement in the "W3C Endorsement" section below is from an individual W3C member acting in their own capacity, not from the W3C or the Community Group.
+**Standards status.** The NTI-1 specification is an input contribution / Discussion Draft to the W3C Agent Protocol Community Group. It is not a W3C deliverable, Recommendation, or official interoperability artifact, and no *organizational* W3C endorsement or "official" status is claimed. The endorsements in the "W3C Endorsement" section below are from individual W3C members acting in their own capacity, not from the W3C or the Community Group.
 
 Project governance — including TSC composition and the rough-consensus decision process — is documented in the reference implementation repository (`GOVERNANCE.md`, `MAINTAINERS.md`).
 
@@ -96,8 +100,10 @@ Project governance — including TSC composition and the rough-consensus decisio
 > "As a member of the W3C, I endorse the submission of NTI to the Linux Foundation Decentralized Trust. NTI provides the critical runtime enforcement layer the machine economy needs."
 >
 > — Atharv (W3C)
+> — Prashanna Bableshwar (W3C)
+> — Daveed Benjamin (W3C)
 
-This endorsement is offered by an individual W3C member in their own capacity. It is not an endorsement by the W3C, the W3C Agent Protocol Community Group, or any W3C Member organization, and it does not imply W3C review, approval, or standardization of NTI.
+These endorsements are offered by individual W3C members in their own capacity. They are not endorsements by the W3C, the W3C Agent Protocol Community Group, or any W3C Member organization, and they do not imply W3C review, approval, or standardization of NTI.
 
 ## 9. Reviewer Boundaries
 
