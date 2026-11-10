@@ -91,8 +91,8 @@ specification, which remains under CSL 1.0.
   **relative** links against the local tree, not just external URLs. A renamed or
   deleted file can no longer silently break a document. The check now covers 31
   links (previously 10 external-only).
-* `README.md` now links `CONTRIBUTING.md`, `MAINTAINERS.md`, `GOVERNANCE.md`, and
-  `LFDT-LAB-PROPOSAL.md`.
+* `README.md` now links `CONTRIBUTING.md`, `MAINTAINERS.md`, `GOVERNANCE.md`,
+  `RELEASE.md`, `ADOPTERS.md`, and `LFDT-PROPOSAL.md`.
 * The conformance validator and the Markdown linter both pass locally.
 
 ## 5. Internal contradictions resolved

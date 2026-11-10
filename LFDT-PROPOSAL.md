@@ -1,112 +1,251 @@
 # LFDT Lab Proposal: Neutral Trust Infrastructure (NTI)
 
-**Status:** LFDT Lab proposal. NTI is applying to become a Linux Foundation Decentralized Trust (LFDT) Lab, referencing the published work of the Agent Authority Conformance project. A Lab requires no endorsements and no TAC vote; it is governed by the LFDT Lab Stewards (see `LFDT-LAB-PROPOSAL.md`). This revision supersedes the earlier incubation framing.
+**Status:** Draft Lab Proposal, prepared for submission to LF Decentralized Trust (LFDT) Labs.
 
-## 1. Project Description
+**How to submit:** LFDT Labs accepts proposals as a GitHub issue using the official
+**Lab Proposal** form, at
+<https://github.com/LF-Decentralized-Trust/lab-proposals/issues/new?template=lab-proposal.yml>.
+Filing that form is the entire submission. This document is the source text for each
+field of that form, so the submission can be produced by copy-and-paste. There is no
+TAC vote and no endorsement requirement for a lab; proposals are reviewed by the LFDT
+lab stewards for whether the work is **cogent** and **novel**.
 
-Neutral Trust Infrastructure (NTI) is a post-quantum (ML-DSA-87), custody-free, federated runtime enforcement sidecar for AI agents. NTI provides the missing Layer 1 trust mechanism for the machine economy. It mathematically verifies delegation chains at invocation time, ensuring that no captured or compromised system can define truth for the network.
+**Corrected in this revision.** An earlier version of this file described a "Lab"
+track that "requires no endorsements and no TAC vote" and that entered directly as a
+lab without passing through the LFDT project lifecycle. That framing was wrong on one
+point: LFDT's own lifecycle document states that *every* project accepted by LFDT —
+explicitly including **LFDT Labs projects** — enters the lifecycle through the
+**Incubation** state and is subject to the TAC's entry criteria. A lab is the
+on-ramp; it is not a bypass around those criteria. This revision states the correct
+relationship and records the gaps that remain (see [LFDT-READINESS.md](LFDT-READINESS.md)).
 
-The NTI sidecar sits between the agent and the network, intercepting outbound actions to generate cryptographic Merkle proofs and ML-DSA-87 signatures. The target resource's verifier then independently checks this cryptographic delegation chain at invocation time. The sidecar provides the math; the resource verifier enforces the access. The sidecar does not act as a proxy or replace the resource's native policy enforcement.
+---
 
-## 2. Motivation
+## Section 1: Mission and Scope
 
-Autonomous agents are increasingly granted the ability to act — to move value, call APIs, and change state — but the infrastructure that verifies *whether an agent was actually authorized to take a given action at the moment it took it* is thin. Existing projects solve adjacent problems well: identity issuance, credential formats, and evidence packaging. None provides a runtime enforcement point that cryptographically binds an agent's authorization to the specific action it is attempting, verifiable by the resource being acted upon.
+### Lab Name
 
-NTI is proposed because this is a distinct layer, not a feature of an existing project, and because the maintainers of the adjacent projects have agreed the boundary should be a separate effort rather than a contribution into any one of them.
+Proposed name: **Neutral Trust Infrastructure**.
 
-### 2.1 Distinct Advantage & Non-Overlap
+> Per the LFDT Naming Guidelines, a lab cannot be named after a product, a network,
+> or an existing entity, and needs its own distinct identity. "Neutral Trust
+> Infrastructure" is a descriptive name, not a product or vendor name. It should be
+> checked against the LFDT trademark-counsel review; alternate candidate names are
+> listed under *Additional Information* in case counsel requires a change.
 
-NTI provides runtime enforcement for autonomous agents (Layer 1). It does not replace identity issuance (Identus/AnonCreds) or evidence packaging (ThunderID). It is designed to interoperate with them by verifying their cryptographic receipts at invocation time.
+### Short Description
 
-Concretely:
+A post-quantum, custody-free runtime enforcement layer that verifies, at invocation
+time, that a specific action by a specific AI agent was authorized.
 
-- **Identity issuance** (e.g. Identus, AnonCreds) answers *who is this agent and who vouches for it*. NTI consumes the resulting identifiers and keys; it does not issue them.
-- **Evidence packaging and lifecycle governance** (e.g. ThunderID, UIBC) answers *what happened and how is it packaged for later review*. NTI produces the invocation-time cryptographic receipt that such packages can carry; it does not define the package format.
-- **Runtime enforcement** — NTI's layer — answers *was this specific action, by this agent, authorized at this moment*, and gives the resource a proof it can check without trusting the agent.
+### Scope of Lab
 
-This separation is deliberate. The NTI sidecar does not sit on the critical path as a proxy and does not become a single point of trust; the resource verifier performs its own check. Where an adjacent project already defines a format or identifier, NTI adopts it rather than inventing a competing one. Prior to submission, the maintainers contacted the relevant adjacent projects to confirm this boundary and that the work could not be contributed directly.
+NTI provides the runtime enforcement point for autonomous agents. Existing work
+answers adjacent questions well — identity issuance, credential formats, and evidence
+packaging — but none provides a runtime check that cryptographically binds an agent's
+authorization to the *specific action* it is attempting, in a form the resource being
+acted upon can verify without trusting the agent.
 
-## 3. Solution
+The lab will host and steward:
 
-NTI consists of a reference implementation (Rust core with Python bindings, Apache-2.0) and a specification (Community Specification License 1.0), together with conformance vectors that any independent implementation can run against.
+- the **NTI-1 specification** and its RFC amendment process;
+- a **reference implementation** (Rust core with Python bindings) that produces NTI
+  receipts and conformance vectors;
+- **conformance vectors** that any independent implementation can run against.
 
-The sidecar constructs, for each outbound action:
+The lab does not issue certifications, does not speak for any other project, and
+does not define a competing format where an adjacent project already defines one. It
+adopts existing identifiers and formats and composes with them.
 
-1. A canonical serialization of the action and its authorizing delegation chain.
-2. A Merkle tree over the delegation chain, producing an inclusion proof.
-3. An ML-DSA-87 (FIPS 204) signature over a domain-separated, length-prefixed payload that binds the action digest, the delegation root, the signer's verification method, and the authoritative identifiers (receipt id, attempt id, idempotency key).
+**Origin and history.** NTI grew out of published authority-conformance work. The
+authority-conformance layer defines and tests what a valid delegation is; NTI is the
+runtime enforcement point that checks such a delegation when an agent acts. NTI
+references that work and claims no formal relationship with it.
 
-The resource-side verifier then independently recomputes the payload digest, the Merkle root, and the signature check. Verification is self-contained and requires no call back to the agent.
+### Alignment with LFDT Mission
 
-### 3.1 Verifiable Cryptographic Evidence
+LFDT's mission is to build a neutral, vendor-neutral home for decentralized trust
+technology. NTI is squarely in that space: it is about verifiable authorization for
+autonomous actors, using open, standardized cryptography (ML-DSA-87 per FIPS 204,
+ML-KEM-1024 per FIPS 203). It is vendor-neutral by construction — the specification is
+implementation-independent and the conformance vectors are public — and it is at the
+early, pre-maturity stage that LFDT Labs exists to serve. LFDT is the right home
+because the work needs a neutral steward so that no single vendor's implementation
+defines the trust boundary.
 
-**We make no unverifiable claims.** Every cryptographic claim in this proposal is backed by an artifact a third party can independently reproduce:
+### Relation to Existing LFDT Labs and Projects
 
-- **Reproducible, not asserted.** The reference implementation ships a witness package — a signed manifest of conformance results — published at
+NTI occupies a distinct layer and is designed to compose with adjacent work rather
+than duplicate it:
+
+- **Identity issuance** (for example, Hyperledger Identus, Hyperledger AnonCreds)
+  answers *who is this agent and who vouches for it*. NTI consumes the resulting
+  identifiers and keys; it does not issue them.
+- **Evidence packaging and lifecycle governance** (a separate, adjacent layer) answers
+  *what happened and how is it packaged for later review*. NTI produces the
+  invocation-time receipt that such packages can carry; it does not define the
+  package format.
+- **Runtime enforcement** — NTI's layer — answers *was this specific action, by this
+  agent, authorized at this moment*, and gives the resource a proof it can check.
+
+NTI also interoperates with the **Agent-DID** approach: an NTI receipt binds an
+ML-DSA-87 verification method that must be resolvable and authorized through the
+agent's DID document (see `docs/NTI-Agent-DID-INTEROP.md`). NTI does not define its
+own DID method.
+
+---
+
+## Section 2: Lab Details
+
+### Technical Activity Type
+
+- **Does this lab produce code?** Yes.
+- **Does this lab produce a specification?** Yes.
+
+The lab does both and keeps them separate: the reference implementation is licensed
+under Apache 2.0 with DCO sign-off on all commits; the specification is licensed under
+the Community Specification License 1.0 (CSL) and its framework.
+
+### Pre-existing Repositories
+
+```text
+- https://github.com/abisheakp197/nti-spec
+- https://github.com/abisheakp197/Neutral-Trust-Infrastructure
+```
+
+> **DCO note for repository transfer.** LFDT requires every commit in a transferred
+> repository to carry a DCO `Signed-off-by:` line, and states that where existing
+> history does not have it, the history must be squashed into a single signed-off
+> commit for the new lab repository. The reference-implementation repository has
+> already been squashed to a single signed-off initial commit for this reason. The
+> specification repository's history is **not** fully signed off and would need the
+> same treatment before transfer; this is tracked in [LFDT-READINESS.md](LFDT-READINESS.md).
+
+### Initial Committers
+
+```text
+- https://github.com/abisheakp197
+- https://github.com/zhaoxinghua09-cell
+```
+
+Committers act in their own capacity. No organization is represented, and no single
+organization holds more than one seat.
+
+### Sponsor
+
+None at this time. A sponsor is optional; if an LFDT maintainer, TAC member, GB
+member, or SIG chair is willing to sponsor, we would welcome it and will add it here.
+
+### Licensing
+
+- [x] I understand that all code hosted in LFDT Labs must be made available under an
+  Apache 2.0 license with DCO sign-off.
+- [x] I understand that all specification and standards work in LFDT Labs is done
+  under the Community Specification License 1.0 and the rest of the CSL framework.
+
+Code contributions use the DCO exclusively; no separate CLA is required for code.
+Specification contributions are made under the CSL framework, which includes the
+Community Specification Contributor License Agreement. DCO enforcement is active via
+GitHub Actions in both repositories.
+
+### Governance Model or Practice
+
+Governance is documented in [`GOVERNANCE.md`](GOVERNANCE.md) (decision making),
+[`MAINTAINERS.md`](MAINTAINERS.md) (maintainers and scopes), and
+[`CONTRIBUTING.md`](CONTRIBUTING.md) (contribution process and DCO). Decisions are
+made by rough consensus of the maintainers, in public.
+
+### Security
+
+- Vulnerability disclosure policy: [`SECURITY.md`](SECURITY.md) in both repositories.
+- Dependency scanning: Dependabot is enabled in both repositories.
+- Release signing: the reference implementation signs release artifacts with Sigstore
+  (keyless) and attaches SLSA build provenance; the process is documented in its
+  [`RELEASE.md`](https://github.com/abisheakp197/Neutral-Trust-Infrastructure) (in the implementation repository).
+- Static analysis: CodeQL runs on every pull request in both repositories.
+- OpenSSF Scorecard is published for both repositories (badge on each README).
+- OpenSSF Best Practices badge: applied for; see [LFDT-READINESS.md](LFDT-READINESS.md)
+  for current status.
+
+### Infrastructure and Tooling
+
+GitHub Actions for CI (build, test, lint, link-check, conformance, CodeQL, Scorecard),
+GitHub Pages for the documentation site, and PyPI Trusted Publishing for the reference
+implementation's wheels. No anticipated needs beyond what is already in use.
+
+### Evidence of Adoption and Use Cases
+
+- The reference implementation publishes a signed **witness package** — a manifest of
+  conformance results with the public key, the manifest, the signature, and the
+  scripts to re-run the checks — at
   <https://abisheakp197.github.io/Neutral-Trust-Infrastructure/witness/>.
-  It includes the public key, the manifest, the signature, and the scripts to
-  re-run the checks, so anyone can confirm or refute the result. Our Merkle trees
-  and ML-DSA-87 signatures are **reproducible**: the verification procedure is
-  fully specified and open, and the published public key lets any party check the
-  signature without trusting us.
-- **Audit status stated plainly.** An independent third-party audit has not yet
-  been formally commissioned. However, NTI has undergone a publicly published
-  security assessment using the AACP (REMORA) framework by Stian Skogbrott. The
-  findings are documented in the assessor's published report (available at:
-  <https://github.com/darklordVirtual/agent-authority-conformance/blob/main/publications/nti-witness-2026-11-07/REPORT.md>)
-  and are actively being remediated as a roadmap item toward Graduated status.
-  Reference to the REMORA assessment is provided as presented by its maintainer,
-  including its stated limitations (SECOND_IMPLEMENTATION / BCR-2), rather than
-  as formal independent validation.
-- **Standards alignment.** Signatures use ML-DSA-87 (FIPS 204) and key
-  encapsulation uses ML-KEM-1024 (FIPS 203), via widely used Rust crates
-  (`pqcrypto-dilithium`, `pqcrypto-kyber`). We make no claim of formal
-  certification.
+- The specification is an input contribution / Discussion Draft to the W3C Agent
+  Protocol Community Group (public-agentprotocol). It is not a W3C deliverable and no
+  organizational W3C endorsement is claimed.
+- Independent researchers are conducting review and interoperability testing at
+  defined boundaries. See [`ADOPTERS.md`](ADOPTERS.md).
+- A public security assessment of NTI was published using the AACP (REMORA) framework
+  by an independent assessor. It is referenced as presented by its maintainer,
+  including its stated limitations, and is not claimed as formal independent
+  validation.
 
-## 4. Initial Proposed TSC
+### Roadmap
 
-Per the principles of explicit consent and decentralized governance, the following individuals are proposed for the initial Technical Steering Committee. A seat is recorded only on written confirmation; an invitation is not a confirmed seat.
+The 12-month roadmap (toward Graduated-status criteria) is in
+[`docs/ROADMAP.md`](docs/ROADMAP.md). Near-term items include commissioning a formal
+independent security audit, growing maintainer diversity to three or more
+organizations, and completing the OpenSSF Best Practices badge application.
 
-- **Abisheak P.** (Lead Architect, NTI)
-- **Steven Zhao (Xinghua)** — initial TSC seat of the proposed TSC. Independent researcher (ORCID: 0009-0001-0512-1237). Writing in a personal capacity, with no organizational affiliation, and not representing any organization.
+---
 
-Participants are drawn from independent projects, each with its own repository and release cadence. Participants act in their own capacity: no organization is represented, and no single organization holds more than one seat. The maintainers are committed to growing the TSC further and increasing organizational diversity as the contributor base expands.
+## Section 3: Existing Assets
 
-## 5. External Advisors
+### Existing Name and Logo
 
-The following individual provides independent architectural review and guidance, ensuring the standard remains aligned with capability-based security principles:
+The name "Neutral Trust Infrastructure" is used for this work. No trademark is
+registered on the name at this time. Any logo will be provided to LFDT on request.
 
-- **Alan Karp** (Capability Security Expert)
+### Website URL
 
-## 6. Active Contributors (Non-TSC)
+Documentation sites: <https://abisheakp197.github.io/nti-spec/> and
+<https://abisheakp197.github.io/Neutral-Trust-Infrastructure/>. No independent domain
+is owned; no domain has been purchased (per the LFDT guidance against purchasing
+domains before acceptance).
 
-The following individuals have made significant technical contributions to the NTI-1 specification and reference implementation, but have not yet been formally confirmed for the TSC:
+### Social Media Accounts
 
-- **Larry Lewis** (Rust Core Contributor, W3C CG Chair)
-- **Chris Hopley** (Cryptographic Conformance, AlgoVoi)
+None at this time.
 
-## 7. Vendor Neutrality & Governance
+### Trademark and Accounts Signoff
 
-NTI is committed to absolute vendor neutrality. The specification is licensed under the Community Specification License 1.0 (CSL) and the reference implementation under Apache 2.0. The conformance lab remains strictly independent from the TSC to ensure separation of powers. Silence or past collaboration does not count as consent; any changes to the shared governance map require explicit confirmation from the project maintainer.
+- [x] If the lab is accepted, I agree to donate all related trademarks and accounts to
+  the LFDT.
 
-**Contribution policy.** Code contributions use the Developer Certificate of Origin (DCO) exclusively; no separate CLA is required for code. Specification contributions are made under the Community Specification License 1.0 (CSL) framework, which includes the Community Specification Contributor License Agreement. DCO enforcement is active via GitHub Actions for all new contributions.
+---
 
-**Standards status.** The NTI-1 specification is an input contribution / Discussion Draft to the W3C Agent Protocol Community Group. It is not a W3C deliverable, Recommendation, or official interoperability artifact, and no *organizational* W3C endorsement or "official" status is claimed. The endorsements in the "W3C Endorsement" section below are from individual W3C members acting in their own capacity, not from the W3C or the Community Group.
+## Section 4: Contact Information
 
-Project governance — including TSC composition and the rough-consensus decision process — is documented in the reference implementation repository (`GOVERNANCE.md`, `MAINTAINERS.md`).
+### Contact name(s) and email(s)
 
-## 8. W3C Endorsement
+```text
+Abisheak P. - abisheakp197@gmail.com
+```
 
-> "As a member of the W3C, I endorse the submission of NTI to the Linux Foundation Decentralized Trust. NTI provides the critical runtime enforcement layer the machine economy needs."
->
-> — Atharv (W3C)
-> — Prashanna Bableshwar (W3C)
-> — Daveed Benjamin (W3C)
+### Contributing or sponsoring entity signatory information
 
-These endorsements are offered by individual W3C members in their own capacity. They are not endorsements by the W3C, the W3C Agent Protocol Community Group, or any W3C Member organization, and they do not imply W3C review, approval, or standardization of NTI.
+Provided at the time of asset transfer if the lab is accepted. There are no
+organization-held assets to contribute at this stage.
 
-## 9. Reviewer Boundaries
+### Additional Information
 
-Endorsement is opt-in and individually given. Projects and reviewers that have declined to endorse NTI are not listed anywhere in this proposal, and their prior participation, silence, or past collaboration is not represented as endorsement. Only explicit, written endorsements are recorded, and only with the endorser's consent.
-
-To keep the record accurate: **APS has reviewed the architectural alignment, but has not run the NTI test vectors.** No claim is made that APS (or any other project) has executed the NTI conformance vectors.
+- **Name alternates.** If trademark counsel requires a different name, candidate
+  alternates will be supplied at that time.
+- **Incubating-project ambition.** NTI's intent is to mature toward an LFDT Incubation
+  project; this lab proposal is the first step. LFDT staff guidance on the lab-to-project
+  path is welcome.
+- **Lifecycle acknowledgement.** We understand and accept that a lab enters the LFDT
+  project lifecycle through Incubation and is subject to the TAC's entry criteria
+  (Legal, Diversity, Security). [LFDT-READINESS.md](LFDT-READINESS.md) records our
+  current status against those criteria.
+- **Licensing.** Code is Apache 2.0 with DCO; specification is CSL 1.0. No alternative
+  licenses are in use.
