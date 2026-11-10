@@ -52,11 +52,12 @@ The resource-side verifier then independently recomputes the payload digest, the
 - **Audit status stated plainly.** An independent third-party audit has not yet
   been formally commissioned. However, NTI has undergone a publicly published
   security assessment using the AACP (REMORA) framework by Stian Skogbrott. The
-  findings are documented in our `AUDIT_REPORT.md` and are actively being
-  remediated as a roadmap item toward Graduated status. Reference to the REMORA
-  assessment is provided as presented by its maintainer, including its stated
-  limitations (SECOND_IMPLEMENTATION / BCR-2), rather than as formal independent
-  validation.
+  findings are documented in the assessor's published report (available at:
+  <https://github.com/darklordVirtual/agent-authority-conformance/blob/main/publications/nti-witness-2026-11-07/REPORT.md>)
+  and are actively being remediated as a roadmap item toward Graduated status.
+  Reference to the REMORA assessment is provided as presented by its maintainer,
+  including its stated limitations (SECOND_IMPLEMENTATION / BCR-2), rather than
+  as formal independent validation.
 - **Standards alignment.** Signatures use ML-DSA-87 (FIPS 204) and key
   encapsulation uses ML-KEM-1024 (FIPS 203), via widely used Rust crates
   (`pqcrypto-dilithium`, `pqcrypto-kyber`). We make no claim of formal
