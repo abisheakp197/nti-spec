@@ -139,8 +139,9 @@ represented, and no single organization holds more than one seat.
 
 ### Sponsor
 
-None at this time. A sponsor is optional; if an LFDT maintainer, TAC member, GB
-member, or SIG chair is willing to sponsor, we would welcome it and will add it here.
+```text
+Tymofii Pidlisnyi (tima@aeoess.com) - Agent Passport System (APS)
+```
 
 ### Licensing
 
