@@ -197,10 +197,12 @@ Per LFDT's Common Repository Structure:
 ## 6. Diversity
 
 LFDT expects multiple maintainers and, for Incubation, maintainers from **two or
-more organizations**. NTI currently has one maintainer organization plus an
-independent individual. Growing this is on the [roadmap](docs/ROADMAP.md). This does not
-block filing a lab proposal, but it is a gate for Incubation, so it is stated
-plainly here.
+more organizations**. NTI has three maintainers representing three independent
+parties: Abisheak P. (NTI), Tymofii Pidlisnyi (APS), and Steven Zhao
+(Independent). This satisfies the LFDT Incubation requirement of ≥2 maintaining
+organizations. Growing the maintainer base further is on the
+[roadmap](docs/ROADMAP.md). This does not block filing a lab proposal, but it is
+a gate for Incubation, so it is stated plainly here.
 
 ## 7. Summary — what to do before submitting
 

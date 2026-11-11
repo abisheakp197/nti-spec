@@ -125,11 +125,15 @@ the Community Specification License 1.0 (CSL) and its framework.
 
 ```text
 - https://github.com/abisheakp197
+- https://github.com/aeoess
 - https://github.com/zhaoxinghua09-cell
 ```
 
-Committers act in their own capacity. No organization is represented, and no single
-organization holds more than one seat.
+The initial committers are the project's three maintainers, listed in
+[`MAINTAINERS.md`](MAINTAINERS.md): Abisheak P. (NTI), Tymofii Pidlisnyi
+(Independent Researcher — Agent Passport System (APS)), and Steven Zhao
+(Independent Researcher). Committers act in their own capacity. No organization is
+represented, and no single organization holds more than one seat.
 
 ### Sponsor
 
