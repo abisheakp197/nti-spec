@@ -1,7 +1,32 @@
 version: 2
 updates:
-  # Keep GitHub Actions pinned SHAs current. This repository has no runtime
-  # dependency manifests; its tooling is Python and Node invoked by CI.
+  # Python tooling invoked by CI (scripts/check_links.py).
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - dependencies
+      - python
+
+  # Node tooling invoked by CI (markdownlint, pinned in package-lock.json).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - dependencies
+      - javascript
+
+  # Keep GitHub Actions pinned SHAs current.
   - package-ecosystem: github-actions
     directory: /
     schedule:
