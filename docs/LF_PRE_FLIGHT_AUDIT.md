@@ -52,8 +52,11 @@ at that SHA.
 
 ### 2.2 Tool installs pinned
 
-CI installs that previously used floating versions now pin exact versions:
-`markdownlint-cli@0.50.0` and `requests==2.32.3`.
+CI installs that previously used floating versions now pin exact versions and
+verify hashes, which is what OpenSSF Scorecard's Pinned-Dependencies check
+requires: `markdownlint-cli@0.50.0` is installed with `npm ci` from the committed
+`package-lock.json`, and `requests==2.32.3` is installed with
+`pip install --require-hashes` from `requirements-ci.txt`.
 
 ### 2.3 Dependabot
 

@@ -1,0 +1,6 @@
+# Node tooling installed by CI (`npm ci`); never committed.
+node_modules/
+
+# Python bytecode produced by the conformance and link-check scripts.
+__pycache__/
+*.pyc

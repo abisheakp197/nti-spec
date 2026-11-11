@@ -17,7 +17,7 @@ def check_links():
     checked = 0
 
     for root, _, files in os.walk("."):
-        if ".git" in root:
+        if ".git" in root or "node_modules" in root:
             continue
         for file in files:
             if file.endswith(".md"):

@@ -1,0 +1,20 @@
+# Hash-pinned Python dependencies for CI.
+#
+# OpenSSF Scorecard's Pinned-Dependencies check treats a pip command as pinned
+# only when it is hash-verified, so CI installs from this file with
+# `--require-hashes`. Every entry MUST carry a --hash, and the full transitive
+# set must be listed, because --require-hashes rejects anything unhashed.
+#
+# requests is used by scripts/check_links.py. All wheels are universal
+# (py3-none-any), so the hashes below work on every runner platform.
+# Hashes: https://pypi.org/project/<name>/<version>/#files
+certifi==2026.10.23 \
+    --hash=sha256:e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1
+charset-normalizer==3.5.2 \
+    --hash=sha256:b6b751274acb69d77b3323d6b7dbaa3c7fdfc1eb829b7eb61d262f32e1af9685
+idna==3.20 \
+    --hash=sha256:ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c
+requests==2.32.3 \
+    --hash=sha256:70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6
+urllib3==2.8.0 \
+    --hash=sha256:0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3
