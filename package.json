@@ -5,5 +5,13 @@
   "description": "CI-only tooling for the NTI-1 specification repository. Not a published package.",
   "devDependencies": {
     "markdownlint-cli": "0.50.0"
+  },
+  "overrides": {
+    "markdownlint-cli": {
+      "minimatch": "11.0.8"
+    },
+    "micromark-extension-math": {
+      "katex": "0.19.1"
+    }
   }
 }
