@@ -127,15 +127,18 @@ the Community Specification License 1.0 (CSL) and its framework.
 - https://github.com/abisheakp197
 - https://github.com/aeoess
 - https://github.com/zhaoxinghua09-cell
+- https://github.com/bigblackcoder
 ```
 
-The initial committers are the project's three maintainers, listed in
+The initial committers are the project's four maintainers, listed in
 [`MAINTAINERS.md`](MAINTAINERS.md): Abisheak P. (NTI), Tymofii Pidlisnyi
-(Independent Researcher — Agent Passport System (APS)), and Steven Zhao,
-Independent Researcher, who serves as an Initial TSC Member (Standards Capacity),
-providing standards and specification governance rather than day-to-day code
-maintenance. Committers act in their own capacity. No organization is
-represented, and no single organization holds more than one seat.
+(Independent Researcher — Agent Passport System (APS)), Steven Zhao, Independent
+Researcher, who serves as an Initial TSC Member (Standards Capacity), providing
+standards and specification governance rather than day-to-day code maintenance,
+and Larry Lewis, Initial TSC Member in a personal capacity, covering runtime
+security and conformance (his W3C Agent Trust Protocol Community Group
+chairmanship is a separate affiliation). Committers act in their own capacity. No
+organization is represented, and no single organization holds more than one seat.
 
 ### Sponsor
 
