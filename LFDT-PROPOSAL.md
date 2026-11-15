@@ -93,6 +93,10 @@ ML-DSA-87 verification method that must be resolvable and authorized through the
 agent's DID document (see `docs/NTI-Agent-DID-INTEROP.md`). NTI does not define its
 own DID method.
 
+NTI is complementary to existing LFDT identity projects. It does not currently
+have a published integration with the Agent Authority Conformance lab, but the
+lab's public cases can be used as future test inputs.
+
 ---
 
 ## Section 2: Lab Details
@@ -125,14 +129,12 @@ the Community Specification License 1.0 (CSL) and its framework.
 
 ```text
 - https://github.com/abisheakp197
-- https://github.com/aeoess
 - https://github.com/zhaoxinghua09-cell
 - https://github.com/bigblackcoder
 ```
 
-The initial committers are the project's four maintainers, listed in
-[`MAINTAINERS.md`](MAINTAINERS.md): Abisheak P. (NTI), Tymofii Pidlisnyi
-(Independent Researcher — Agent Passport System (APS)), Steven Zhao, Independent
+The initial committers are the project's three maintainers, listed in
+[`MAINTAINERS.md`](MAINTAINERS.md): Abisheak P. (NTI), Steven Zhao, Independent
 Researcher, who serves as an Initial TSC Member (Standards Capacity), providing
 standards and specification governance rather than day-to-day code maintenance,
 and Larry Lewis, Initial TSC Member in a personal capacity, covering runtime
@@ -142,9 +144,7 @@ organization is represented, and no single organization holds more than one seat
 
 ### Sponsor
 
-```text
-Tymofii Pidlisnyi (tima@aeoess.com) - Agent Passport System (APS)
-```
+None.
 
 ### Licensing
 
