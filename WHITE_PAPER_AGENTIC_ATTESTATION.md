@@ -148,7 +148,7 @@ reuse: the fix is a verification discipline at existing checkpoints, not a new s
 ### 2.4 Related findings
 
 | Issue | Description | Relevance |
-|---|---|---|
+| --- | --- | --- |
 | 176864434 | Private Filter Service node attestations omitted from the Apple Intelligence Report | Attestation completeness |
 | 181951488 | Cost-token signing keys not published to the transparency service | Selective verifiability — some claims checkable, others not |
 | 184553308 | `pccvre` caches release assets by filename; a later release can pick up an earlier image | Content-addressed identity replaced by a mutable name |
@@ -315,7 +315,7 @@ therefore different signatures — for semantically identical payloads.
 This is not hypothetical. Comparing JCS against compact sorted JSON on four cases:
 
 | Input | RFC 8785 JCS | Compact sorted JSON | Result |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `{"amt": 1.0}` | `{"amt":1}` | `{"amt":1.0}` | **diverges** |
 | `{"n": 1e-7}` | `{"n":1e-7}` | `{"n":1e-07}` | **diverges** |
 | `{"amt": 1e30}` | `{"amt":1e+30}` | `{"amt":1e+30}` | same |
@@ -532,7 +532,7 @@ existing verifiers, and identify artefacts by content hash rather than filename.
 ### 5.4 Deployment shape and non-regression
 
 | Concern | NTI's position |
-|---|---|
+| --- | --- |
 | Kernel | Untouched. NTI runs in user space. |
 | Foundation Model | Untouched. No weights, no fine-tuning, no prompt changes. |
 | Existing APIs | Unchanged. App Intents keep their signatures; the sidecar is additive. |
@@ -578,7 +578,7 @@ enough to be adopted.
 Stated plainly, so that no reader mistakes a blueprint for a product:
 
 | Component | Status |
-|---|---|
+| --- | --- |
 | Rust core: ML-DSA-87, Merkle, `TrustEngine`, canonical JSON | **Built**, `ube-foundation` 0.1.9 on PyPI |
 | Python adapters: CrewAI, LangChain, AutoGen, OpenHands | **Built**, published, CI green |
 | Swift / Objective-C bindings | **Not built** |
@@ -618,7 +618,7 @@ All quotations are from Apple's published PCC Release Notes
 2026-11-19.
 
 | Issue | Status | Layer | Pattern |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 178863006 | Resolved (6A535100) | Attestation coverage | Security value outside attested measurement |
 | 187893777 | Open | Script policy | Identity by caller-supplied name/path |
 | 167793384 | Open | Transparency | Inclusion proof not enforced |
