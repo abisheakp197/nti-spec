@@ -244,7 +244,7 @@ OpenHands, each exposing a verification entry point and failing closed by raisin
 The security property NTI claims rests on one statement: **the verdict is a deterministic
 function of its inputs.**
 
-```
+```text
 Decision = f( canonical(request), key_state, policy_state, pinned_timestamp )
 ```
 
