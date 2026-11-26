@@ -111,7 +111,7 @@ Private key material lives in the sidecar process, not in the agent's context.
 Concretely, in the reference wrappers the signing key is held by the guardrail
 object and used through a signing call:
 
-```python
+```text
 signature = self.key_pair.sign_bytes(message)
 ```
 
