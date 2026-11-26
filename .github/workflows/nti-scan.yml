@@ -1,14 +1,21 @@
-name: NTI Security Scan
+name: NTI-1 Scan
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-# Read-only by design. The scan reports its score in the job log only; it does
-# not modify the repository. The self-issued "NTI Verified" compliance badge is
-# intentionally NOT committed back to README.md — project health is reported by
-# the OpenSSF Scorecard badge instead. Read-only permissions also satisfy the
-# LFDT / OpenSSF Token-Permissions and Dangerous-Workflow requirements.
+
+# Read-only by design. The scan reports into the job log only and never
+# modifies the repository, so this workflow keeps `contents: read` and
+# satisfies the LFDT / OpenSSF Token-Permissions and Dangerous-Workflow
+# requirements.
+#
+# The badge shown in README.md is the live workflow-status badge
+# (shields.io reads the Actions status API), not a badge committed back to the
+# tree. A committed badge would need `contents: write`, and it would also
+# render a score for a repository that contains only documentation. This repo
+# has no agent code, so the action correctly reports `n/a` rather than 100/100.
 permissions:
   contents: read
 jobs:
@@ -16,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: abisheakp197/nti-scan-action@6591bbe4929a38d9ce8db2f81166472c77066df6 # v1.0.0
+      - uses: abisheakp197/nti-scan-action@143907be8a716cbf0fd83731f89d58ccea825a74 # v1.1.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          mode: report
+          min-score: '0'

@@ -45,7 +45,40 @@ NTI-1 specifies the **5 core pillars** that any compliant AI agent system MUST i
 
 ## How to Implement & Verify Compliance
 
-### 1. Reference SDKs & Integrations
+### 1. Adopt the badge (30 seconds)
+
+Add the NTI-1 scan to your repository:
+
+```yaml
+name: NTI-1 scan
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  nti:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: abisheakp197/nti-scan-action@v1
+```
+
+It is read-only: it needs no write access and never touches your `README.md`. The score, the estimated compliance profile and any findings appear in the job summary.
+
+Two properties are deliberate, because a badge that overstates is worse than no badge:
+
+- **A high-severity finding cannot produce a green badge.** Severity gates the colour before the score does.
+- **A repository with no agent framework gets `n/a`, not 100/100.** This specification repository is documentation only, so it carries the live status badge below rather than a score:
+
+[![NTI-1 scan](https://img.shields.io/github/actions/workflow/status/abisheakp197/nti-spec/nti-scan.yml?label=NTI-1%20scan)](https://github.com/abisheakp197/nti-spec/actions/workflows/nti-scan.yml)
+
+Once your scan is running, add yourself to [ADOPTERS.md](./ADOPTERS.md) with a pull request that links to your public repository.
+
+### 2. Reference SDKs & Integrations
 
 The reference SDK implementation is [`ube-foundation`](https://pypi.org/project/ube-foundation/), available on PyPI (the crates.io page was reported broken on the public-agentprotocol list on 2026-10-30 and is no longer linked).
 
@@ -55,7 +88,7 @@ Framework integrations:
 - [`crewai-nti`](https://pypi.org/project/crewai-nti/) — CrewAI multi-agent BFT consensus integration.
 - [`autogen-nti`](https://pypi.org/project/autogen-nti/) — AutoGen zero-trust policy enforcement.
 
-### 2. Verify Conformance
+### 3. Verify Conformance
 
 Run the official NTI-1 conformance validator against the standard examples or your system outputs:
 
