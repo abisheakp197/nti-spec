@@ -104,6 +104,10 @@ The NTI-1 specification is maintained under the Community Specification License 
 
 Amendments are proposed via RFCs in the [rfcs/](./rfcs/) folder. Contribution rules, including the required DCO sign-off, are in [CONTRIBUTING.md](./CONTRIBUTING.md); the maintainer list is in [MAINTAINERS.md](./MAINTAINERS.md) and the decision process in [GOVERNANCE.md](./GOVERNANCE.md).
 
+Open amendments:
+
+- [RFC 0001 — Authorization Receipts](./rfcs/0001-authorization-receipts.md). Defines the receipt as a normative object produced by the same call as the verdict, and records that the reference engine does not implement it yet.
+
 The versioning and publication process for the specification is documented in [RELEASE.md](./RELEASE.md). Organizations and projects that implement or build on NTI-1 are listed in [ADOPTERS.md](./ADOPTERS.md).
 
 NTI is applying to become a Linux Foundation Decentralized Trust (LFDT) Lab. The proposal is in [LFDT-PROPOSAL.md](./LFDT-PROPOSAL.md); the current status against the LFDT requirements is in [LFDT-READINESS.md](./LFDT-READINESS.md).
