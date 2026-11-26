@@ -17,6 +17,7 @@
 
 - 📄 **[NTI-1 Specification (NTI-1.md)](./NTI-1.md)** — Full specification text including requirements, RFC 2119 terminology, and testable assertion suites.
 - 📘 **[Attestation Gaps in Agentic AI Platforms (WHITE_PAPER_AGENTIC_ATTESTATION.md)](./WHITE_PAPER_AGENTIC_ATTESTATION.md)** — Case study of Apple's agent layer, plus an implementation blueprint for Swift FFI, App Intents, and PCC integration. Includes an explicit account of what remains unbuilt.
+- 🛡️ **[Security Limits (SECURITY_LIMITS.md)](./SECURITY_LIMITS.md)** — Falsifiable statement of what a compromised agent still cannot do: thermodynamic forging bounds, separation of context, fail-closed defaults, audit immutability, and workload binding. Each limit names what it does *not* establish.
 - 📜 **[RFC Amendments Folder (rfcs/)](./rfcs/)** — Active proposals, amendments, and governance discussions.
 - 🧪 **[Conformance Examples (conformance/)](./conformance/)** — Official JSON examples and verification script for NTI-1 compliance testing.
 
