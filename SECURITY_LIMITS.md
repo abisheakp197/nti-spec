@@ -174,8 +174,9 @@ that the absence of information is a denial, not a pass:
 | Unsigned capability token attached to a signed request | Deny |
 | Capability granted but expired at the pinned time | Deny |
 | Caveat that cannot be evaluated | Deny |
-| Workload measurement registered but not presented | Deny |
-| Workload measurement does not match registered value | Deny |
+| Workload measurement registered but not observed by the enforcement point | Deny |
+| Observed workload measurement does not match registered value | Deny |
+| Declared measurement contradicts the observation | Deny |
 | No rule matched | Deny |
 
 Two properties of this design are worth naming explicitly.
@@ -264,13 +265,15 @@ the two conventions across implementations breaks verification.
 
 ---
 
-## 5. Workload binding: closing the key-replay gap
+## 5. Workload binding: what it does and does not close
 
 ### 5.1 The claim
 
-A stolen key is not sufficient to act. Identity is bound to a workload
-measurement as well as to a key, so a credential replayed from an unregistered
-host is denied.
+When a deployment supplies a measurement it obtained from the runtime, an actor
+bound to a workload is denied unless that measurement matches the registered
+value. A stolen key is then not sufficient to act *provided the enforcement
+point measures the host*. The engine cannot measure a remote host itself, and
+the claim is exactly as strong as that observation and no stronger.
 
 ### 5.2 Why this section exists
 
@@ -287,24 +290,41 @@ A key answers *who is calling*. It does not answer *what is calling*.
 
 `register_pqc_identity_key` accepts an optional workload measurement — the
 SHA-256 digest of the container image or build artefact expected to hold the
-credential. When a measurement is registered, `evaluate` requires the request to
-carry a matching value and denies otherwise:
+credential. A bound actor is authorized only through an entry point that takes
+the measurement the caller observed:
 
-| Registered | Presented | Result |
+```rust
+engine.evaluate_with_measurement(&request, Some(&observed), now);
+engine.record_with_measurement(request, Some(&observed));
+```
+
+| Registered | Observed by enforcement point | Result |
 | --- | --- | --- |
 | `sha256:aaaa…` | `sha256:aaaa…` | Allow |
 | `sha256:aaaa…` | `sha256:bbbb…` | Deny |
-| `sha256:aaaa…` | (absent) | Deny |
+| `sha256:aaaa…` | (nothing supplied) | Deny |
 | `sha256:aaaa…` | malformed | Deny |
 | (none) | anything | key-only, 0.1.x behaviour |
 
-Three design decisions matter more than the API:
+### 5.4 The measurement must come from the enforcement point
 
-**The measurement is deliberately excluded from the signed message.** If it were
-covered by `message_to_sign()`, an attacker holding the stolen key could simply
-sign whatever measurement they wished, and the binding would be decorative. The
-measurement must be the one field not under the signer's control: it is a claim
-about the environment, checked against locally-registered expectation.
+This is the part that was wrong in 0.2.0, and it is worth stating plainly because
+the mistake is easy to repeat.
+
+`ActionRequest::workload_measurement_hash` is supplied by whoever sends the
+request. Signing it does not help: the attacker holds the stolen key, so they
+sign whatever they like. Leaving it *out* of `message_to_sign()` does not help
+either — the sender controls the whole struct regardless of which fields the
+signature covers. A check that compares a registered digest against a value the
+attacker chooses is not a check.
+
+The engine therefore takes the measurement as an argument, not from the request.
+What the request declares is compared against the observation, which catches
+tampering in transit but is not evidence on its own. Reading the digest from a
+container runtime, an attestation report, or a TPM quote is what makes it
+evidence.
+
+Two further design decisions:
 
 **The check runs outside the PQC branch.** A measurement registered for an actor
 constrains every request path from that actor — including Ed25519-only and
@@ -317,20 +337,35 @@ value in different notations. Values that are not SHA-256 digests are rejected a
 *registration* rather than compared as opaque strings, because a typo that never
 matches produces a permanently denying policy that looks like a working one.
 
-### 5.4 What this limit does not establish
+### 5.5 What this limit does not establish
 
-- **Measurement quality.** NTI verifies that the presented value matches the
-  registered one. Whether that value actually describes the running code depends
-  on the measurement source — a TPM quote, a signed image digest from a registry,
-  or a self-report. A workload that lies about its own hash defeats the binding,
-  and only a hardware-rooted attestation closes that.
+- **That the observation is honest.** NTI compares the registered value against
+  the value the caller supplies as observed. If that value is copied out of the
+  request — the 0.2.0 defect — the binding is decorative. If it comes from a
+  runtime the attacker controls, it is only as trustworthy as that runtime. Only
+  a hardware-rooted attestation, with the verifier checking the quote against a
+  known-good root, closes that gap. NTI checks equality; it does not verify
+  attestation chains.
 - **It is opt-in.** An actor with no registered measurement retains key-only
   authorization. Deployments must enable binding per actor; it is not on by
   default, because turning it on without provisioning measurements would deny all
   traffic from that actor.
+- **It does not survive a compromised enforcement point.** An attacker who can
+  call `evaluate_with_measurement` with an arbitrary digest, or who can write to
+  engine state, is the enforcing party. The binding protects the key from being
+  used elsewhere; it does not protect the engine from its own operator.
 - **Redeploy requires re-registration.** A new image has a new digest. The update
   path is `register_workload_measurement`, which is an administrative operation
   and must itself be access-controlled.
+
+### 5.6 Why the 0.2.0 claim was corrected rather than withdrawn
+
+0.2.0 shipped a binding that compared the registered digest against the request
+field and claimed the replay gap was closed. It was not: a verbatim replay of a
+captured request, and a freshly signed request declaring the expected digest,
+were both authorized from an unmeasured host. Both were reproduced by running the
+engine before 0.2.1 was written. The 0.2.1 release notes and the tests record the
+defect; this section states the bound that actually holds.
 
 ---
 
@@ -342,7 +377,7 @@ matches produces a permanently denying policy that looks like a working one.
 | Separation of context | The agent cannot read key material it never received | Host compromise of the sidecar; confused deputy within granted capability |
 | Fail-closed | Absent positive verification, the action does not execute | That the action was intercepted at all |
 | Audit trail | History cannot be edited undetectably | That the root is anchored where an attacker cannot also rewrite it |
-| Workload binding | A stolen key alone cannot act | That the measurement describes the real running code |
+| Workload binding | A stolen key cannot act off a host that the enforcement point measured | That the enforcement point observes honestly; that the measurement describes the real code |
 
 ---
 
@@ -356,7 +391,8 @@ and specific:
 2. It cannot read a credential it was never given.
 3. It cannot execute an action that fails verification.
 4. It cannot alter the record of what it attempted.
-5. It cannot reuse a stolen key from an unmeasured host.
+5. It cannot reuse a stolen key from a host the enforcement point measured as
+   something other than the registered workload.
 
 Everything outside that list is in scope for an attacker, including: persuading
 the agent to *attempt* a harmful action that is within its legitimate capability;
