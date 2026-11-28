@@ -5,9 +5,11 @@ deployment. CanaryGuard's own figures (sub-10 ms ingress inspection, inspection
 receipts with risk scores) are theirs and are treated here as claims to be
 verified, not as inputs to any NTI statement.
 
-Enforcement status: `ube-foundation` 0.2.2 adds the `RiskBelow(f32)` caveat, so
-the engine evaluates the ingress score itself. Before 0.2.2 the threshold sat at
-the integration boundary, in the caller's process.
+Enforcement status: `ube-foundation` 0.3.0 adds `RiskBelow(u32)`, a threshold in
+basis points, so the engine evaluates the ingress score itself. Python callers
+can issue the token that carries it with `TokenBuilder`; before 0.3.0 the Python
+binding had no token issuance and the threshold sat at the integration boundary,
+in the caller's process.
 
 ## The division of labour
 
@@ -44,7 +46,7 @@ and an authorised payment does not make its arguments safe to execute.
                 | action request + ingress evidence                       | threshold
                 v                                                        v
    +---------------------------------------------------------------------------+
-   |                             NTI TrustEngine                               |
+   |                              NTI TrustEngine                              |
    |        grants - delegation chain - workload measurement - RiskBelow       |
    +---------------------------------------------------------------------------+
                 |
@@ -93,7 +95,7 @@ re-evaluates the request (R5, step 5) must see exactly what the engine saw.
   },
   "decision": "Allow",
   "reason": "granted",
-  "engine": { "impl": "ube-foundation", "version": "0.2.2" },
+  "engine": { "impl": "ube-foundation", "version": "0.3.0" },
   "issued_at": "2026-11-26T10:04:11Z",
   "prev_receipt_hash": "sha256:9d5c...",
   "receipt_hash": "sha256:41ab...",
@@ -107,17 +109,18 @@ and keeps each system's evidence verifiable by its own rules.
 
 ## How the engine enforces the score
 
-The threshold is a caveat on the capability token. Wire form, externally tagged
-and pinned by a round-trip test in the core:
+The threshold is a caveat on the capability token, expressed in basis points:
+6500 is 0.65. Wire form, externally tagged and pinned by a round-trip test in
+the core:
 
 ```json
 {
   "location": null,
-  "condition": { "RiskBelow": 0.65 }
+  "condition": { "RiskBelow": 6500 }
 }
 ```
 
-Attached at token issuance, on the issuing side:
+Attached at token issuance. In Rust:
 
 ```rust
 let mut token = CapabilityToken {
@@ -126,79 +129,67 @@ let mut token = CapabilityToken {
     capability: "tool:shell".into(),
     caveats: vec![Caveat {
         location: None,
-        condition: CaveatType::RiskBelow(0.65),
+        condition: CaveatType::RiskBelow(6500),
     }],
     signature: vec![],
 };
 token.signature = issuer_key.sign(&token.message_to_sign()).to_bytes().to_vec();
 ```
 
-The engine reads `request.input.risk_score` and decides:
+In Python, with the issuer key:
+
+```python
+import json
+
+import ube_foundation
+
+issuer = "did:webvh:issuer:agents.example.com"
+key = ube_foundation.Ed25519KeyPair()
+
+builder = ube_foundation.TokenBuilder("tok-1", issuer, "tool:shell")
+builder.risk_below(6500)
+token = json.loads(builder.sign(key.private_key_bytes()))
+assert token["caveats"] == [{"location": None, "condition": {"RiskBelow": 6500}}]
+```
+
+The engine reads `request.input.risk_score`, requires a finite number on the
+0.0 to 1.0 scale, converts it to basis points by rounding to the nearest one, and
+compares integers:
 
 | Condition | Verdict | Reason recorded in the receipt |
 | :--- | :--- | :--- |
-| `score < threshold` | Allow | the engine's normal allow reason |
-| `score >= threshold` | Deny | `caveat violation: Risk score 0.91 at or above threshold 0.65` |
+| `score_bps < threshold_bps` | Allow | the engine's normal allow reason |
+| `score_bps >= threshold_bps` | Deny | `caveat violation: Risk score 9100 bps at or above threshold 6500 bps` |
 | `risk_score` absent | Deny | `caveat violation: Risk caveat requires a numeric 'risk_score'` |
 | `risk_score` not a number | Deny | `caveat violation: Risk caveat requires a numeric 'risk_score'` |
-| threshold not finite | Deny | `caveat violation: Risk threshold must be a finite number` |
+| `risk_score` outside 0.0..=1.0 | Deny | `caveat violation: Risk score 65 must be a finite number in 0.0..=1.0` |
+| threshold above 10000 bps | Deny | `caveat violation: Risk threshold out of range: 20000 basis points must be 0..=10000` |
 
-Equality denies. The last row is defence in depth: `score >= NaN` is false, so an
-unguarded NaN threshold would allow everything.
+Equality denies. The scale check matters: a producer that passes 65 meaning 65
+percent would otherwise be read as a score of 65 and fail open, so an
+out-of-scale value is a violation instead.
 
-Because the check now happens inside `verify_all_at`, the denial is part of the
-same evaluation that produces the receipt. The reason string is covered by
-`receipt_hash`, so a verifier re-evaluating the request gets the same answer.
-
-### Signing a token that carries the caveat
+### Signed bytes are the wire form
 
 The signature covers `(id, root_actor, capability, caveats)` as compact JSON with
 object keys sorted, which is what `serde_json` produces without `preserve_order`.
-For a threshold of 0.65 the signed bytes are:
+With an integer threshold the signed bytes are exactly the token's caveat as
+written:
 
 ```json
-["tok-1","issuer","tool:shell",[{"condition":{"RiskBelow":0.6499999761581421},"location":null}]]
+["tok-1","issuer","tool:shell",[{"condition":{"RiskBelow":6500},"location":null}]]
 ```
 
-Note the threshold. `f32` 0.65 widened to `f64` is 0.6499999761581421, and that
-is what appears in the signed bytes, while the token on the wire still carries
-0.65. An issuer that signs the literal `0.65` produces a token the engine
-rejects with `invalid token signature`. This was verified against the published
-0.2.2 wheel.
-
-Practical consequence: choose thresholds that are exact in `f32` (0.25, 0.5,
-0.75) so the signed form equals the wire form. A threshold such as 0.65 or 0.9
-must be signed in its widened form, which is easy to get wrong.
-
-The cleaner long-term fix is an integer representation, for example basis points
-(`RiskBelow(u32)`, 6500 = 0.65). That removes the widening entirely, keeps `Eq`
-derivable, and makes the signed bytes identical in every implementation. It is
-not in 0.2.2; the float form is what shipped.
-
-## What the engine change does not do
-
-**Enforcement requires a token.** `RiskBelow` is a caveat on a capability token.
-A deployment that authorises with `grant(actor, capability)` and no token has no
-caveats, so no threshold applies. The caveat must be attached where tokens are
-issued.
-
-**The Python binding cannot issue tokens.** `ube_foundation` exposes `grant`,
-`register_*`, `evaluate`/`evaluate_at` and `audit_inclusion_proof`; there is no
-token constructor and no Ed25519 signing, so a Python process cannot attach
-`RiskBelow` itself. Options, in order of preference:
-
-1. Issue the token in Rust (or any client holding the issuer key) and pass the
-   signed token in the request's `token` field.
-2. Keep the boundary check below for Python-only deployments, and say so.
-
-A pure-Python deployment that calls `grant()` and stops there is not enforcing
-the risk score, whatever the engine can do.
+This is the change from 0.2.2. There the threshold was an `f32`, and `0.65`
+widened to `f64` and signed as `0.6499999761581421`, so an issuer that signed the
+literal value produced a token the engine rejected. Basis points remove the
+widening: the value in the JSON is the value that is signed, in every language.
 
 ## Reference snippet
 
-The snippet builds the request so the score is committed, then evaluates. When
-the request carries a token with `RiskBelow`, the engine makes the call. The
-explicit check is kept as the fallback for the grant-only case described above.
+Issue a token with the caveat, then let the engine decide. The receipt is
+assembled from the verdict so a Deny is recorded with the same evidence as an
+Allow.
 
 ```python
 import hashlib
@@ -208,8 +199,10 @@ from datetime import datetime, timezone
 
 import ube_foundation
 
+ISSUER = "did:webvh:issuer:agents.example.com"
 ACTOR = "did:webvh:agent-7:agents.example.com"
-RISK_THRESHOLD = 0.65
+CAPABILITY = "tool:shell"
+RISK_THRESHOLD_BPS = 6500  # 0.65
 
 
 def canonical(obj) -> bytes:
@@ -224,12 +217,18 @@ def receipt_hash(receipt: dict) -> str:
     return "sha256:" + hashlib.sha256(canonical(body)).hexdigest()
 
 
-def build_request(action_input: dict, inspection: dict) -> dict:
-    """Embed the ingress evidence so the receipt commits to it."""
-    return {
+def issue_token(issuer_key, threshold_bps: int) -> dict:
+    builder = ube_foundation.TokenBuilder("tok-" + uuid.uuid4().hex[:8], ISSUER, CAPABILITY)
+    builder.risk_below(threshold_bps)
+    return json.loads(builder.sign(issuer_key.private_key_bytes()))
+
+
+def authorize(engine, action_input: dict, inspection: dict, token: dict) -> dict:
+    """Embed the ingress evidence, ask the engine, record what it decided."""
+    request = {
         "id": "r-42",
         "actor": ACTOR,
-        "capability": "tool:shell",
+        "capability": CAPABILITY,
         "action": "bash",
         "input": {
             **action_input,
@@ -240,35 +239,19 @@ def build_request(action_input: dict, inspection: dict) -> dict:
                 "policy_version": inspection["policy_version"],
             },
         },
+        "token": token,
     }
 
-
-def authorize(engine, action_input: dict, inspection: dict, token=None) -> dict:
-    # The request is built first so a Deny still records what was evaluated (R6).
-    request = build_request(action_input, inspection)
-    if token is not None:
-        request["token"] = token
-
-    if token is not None:
-        # The engine evaluates RiskBelow itself; this is the enforced path.
-        raw = engine.evaluate_at(json.dumps(request), datetime.now(timezone.utc).isoformat(), "")
-        result = json.loads(raw)
-        decision, reason = result["decision"], result["reason"]
-    elif inspection["risk_score"] >= RISK_THRESHOLD:
-        # Fallback for grant-only deployments, which carry no caveats.
-        decision, reason = "Deny", "ingress risk above threshold"
-    else:
-        raw = engine.evaluate_at(json.dumps(request), datetime.now(timezone.utc).isoformat(), "")
-        result = json.loads(raw)
-        decision, reason = result["decision"], result["reason"]
+    now = datetime.now(timezone.utc).isoformat()
+    result = json.loads(engine.evaluate_at(json.dumps(request), now, ""))
 
     receipt = {
         "nti": "1.0",
         "receipt_id": str(uuid.uuid4()),
         "request": request,
-        "decision": decision,
-        "reason": reason,
-        "engine": {"impl": "ube-foundation", "version": "0.2.2"},
+        "decision": result["decision"],
+        "reason": result["reason"],
+        "engine": {"impl": "ube-foundation", "version": "0.3.0"},
         "issued_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "prev_receipt_hash": None,
     }
@@ -276,16 +259,41 @@ def authorize(engine, action_input: dict, inspection: dict, token=None) -> dict:
     return receipt
 
 
-if __name__ == "__main__":
-    engine = ube_foundation.TrustEngine()
-    engine.grant(ACTOR, "tool:shell")
-    clean = {"risk_score": 0.12, "verdict": "clean",
-             "receipt_sha256": "sha256:7c1e", "policy_version": "cg-2026.11"}
-    risky = {"risk_score": 0.91, "verdict": "injection",
-             "receipt_sha256": "sha256:aa01", "policy_version": "cg-2026.11"}
-    print(json.dumps(authorize(engine, {"command": "ls -la"}, clean), indent=2)[:400])
-    print("high risk ->", authorize(engine, {"command": "ls -la"}, risky)["reason"])
+issuer_key = ube_foundation.Ed25519KeyPair()
+engine = ube_foundation.TrustEngine()
+engine.register_issuer_key(ISSUER, issuer_key.public_key_bytes())
+engine.grant(ISSUER, CAPABILITY)
+
+token = issue_token(issuer_key, RISK_THRESHOLD_BPS)
+
+clean = {"risk_score": 0.12, "verdict": "clean",
+         "receipt_sha256": "sha256:7c1e", "policy_version": "cg-2026.11"}
+risky = {"risk_score": 0.91, "verdict": "injection",
+         "receipt_sha256": "sha256:aa01", "policy_version": "cg-2026.11"}
+
+allowed = authorize(engine, {"command": "ls -la"}, clean, token)
+denied = authorize(engine, {"command": "ls -la"}, risky, token)
+
+print("clean  ->", allowed["decision"], "|", allowed["reason"])
+print("risky  ->", denied["decision"], "|", denied["reason"])
+print("same receipt mechanics, different verdicts:", allowed["receipt_hash"] != denied["receipt_hash"])
 ```
+
+## What is and is not enforced
+
+**Enforcement requires a token.** `RiskBelow` is a caveat on a capability token.
+A deployment that authorises with `grant(actor, capability)` and no token carries
+no caveats, so no threshold applies. The caveat lives where tokens are issued, so
+a grant-only deployment should say plainly that the score is not enforced by the
+engine.
+
+**The issuer key must be pinned.** A token signed by a key the engine has not
+registered through `register_issuer_key` is denied with `untrusted token issuer`,
+whatever its caveats say. Pinning is what stops an agent issuing itself a
+permissive threshold.
+
+**The caveat is signed.** Editing `RiskBelow` after signing, for example raising
+6500 to 10000, invalidates the signature and the token is denied.
 
 ## Open questions for Kurox AI
 
@@ -304,10 +312,9 @@ if __name__ == "__main__":
 - No joint test exists. Nothing here has been run against a CanaryGuard instance.
 - The latency claim (sub-10 ms) is theirs; NTI adds one engine evaluation per
   action, which is not free and should be measured in the same harness.
-- The score is compared as `f64` against an `f32` threshold, and the signed
-  token bytes contain the widened form of that threshold. A score carrying more
-  precision than `f32` can hold may not reproduce on re-evaluation, and a
-  threshold that is not exact in `f32` is easy to sign wrongly (see above).
-- The snippet builds a receipt-shaped object for illustration. A conformant
+- The score is rounded to the nearest basis point before comparison. A score
+  within half a basis point of the threshold may therefore deny, which is the
+  fail-closed direction but should be stated when a threshold is chosen.
+- The snippet assembles a receipt-shaped object for illustration. A conformant
   deployment takes the receipt from the engine (R1: one operation returns the
   verdict and its receipt), not from the caller assembling one.
