@@ -5,6 +5,10 @@ deployment. CanaryGuard's own figures (sub-10 ms ingress inspection, inspection
 receipts with risk scores) are theirs and are treated here as claims to be
 verified, not as inputs to any NTI statement.
 
+Enforcement status: `ube-foundation` 0.2.2 adds the `RiskBelow(f32)` caveat, so
+the engine evaluates the ingress score itself. Before 0.2.2 the threshold sat at
+the integration boundary, in the caller's process.
+
 ## The division of labour
 
 The two systems answer different questions and should not be merged.
@@ -26,23 +30,23 @@ and an authorised payment does not make its arguments safe to execute.
         untrusted content
                 |
                 v
-   +-------------------------+        risk score + inspection receipt
-   |      CanaryGuard        |------------------------------+
-   |  deterministic ingress  |                              |
-   +-------------------------+                              |
-                |                                           |
-                v                                           v
-   +-------------------------+                    +---------------------+
-   |     model / agent       |                    |  policy at the      |
-   |  proposes a tool call   |                    |  integration edge   |
-   +-------------------------+                    +---------------------+
-                |                                           |
-                | action request + ingress evidence         | threshold
-                v                                           v
-   +---------------------------------------------------------------+
-   |                        NTI TrustEngine                        |
-   |   grants - delegation chain - workload measurement - verdict  |
-   +---------------------------------------------------------------+
+   +-------------------------+
+   |      CanaryGuard        |---- risk score + inspection receipt ----+
+   |  deterministic ingress  |                                          |
+   +-------------------------+                                          |
+                |                                                        |
+                v                                                        v
+   +-------------------------+                                  +------------------+
+   |     model / agent       |                                  |  policy at the   |
+   |  proposes a tool call   |                                  |  integration edge|
+   +-------------------------+                                  +------------------+
+                |                                                        |
+                | action request + ingress evidence                       | threshold
+                v                                                        v
+   +---------------------------------------------------------------------------+
+   |                             NTI TrustEngine                               |
+   |        grants - delegation chain - workload measurement - RiskBelow       |
+   +---------------------------------------------------------------------------+
                 |
                 v
         signed receipt (RFC 0001)
@@ -53,8 +57,8 @@ Three rules make this composition sound.
 1. **The ingress score is evidence, not authority.** CanaryGuard may raise or
    lower suspicion; only the engine's verdict authorises the action.
 2. **The score travels inside the signed request.** It goes into `request.input`,
-   so it is covered by `receipt_hash`. A score that is attached after the verdict
-   is a claim the caller controls, and the receipt would no longer bind what was
+   so it is covered by `receipt_hash`. A score attached after the verdict is a
+   claim the caller controls, and the receipt would no longer bind what was
    evaluated to what was decided.
 3. **A Deny still produces a receipt.** RFC 0001 requirement R6. A blocked action
    that leaves no record is the case an auditor asks about first.
@@ -64,6 +68,9 @@ Three rules make this composition sound.
 RFC 0001 fixes the receipt shape. The score belongs in `request`, which is
 hashed; it must not become a new top-level field, because a verifier that
 re-evaluates the request (R5, step 5) must see exactly what the engine saw.
+
+`risk_score` sits at the top level of `input`, alongside the other caveat inputs
+(`amount`, `path`). The CanaryGuard-specific evidence stays nested.
 
 ```json
 {
@@ -76,8 +83,8 @@ re-evaluates the request (R5, step 5) must see exactly what the engine saw.
     "action": "bash",
     "input": {
       "command": "ls -la",
+      "risk_score": 0.12,
       "canaryguard": {
-        "risk_score": 0.12,
         "verdict": "clean",
         "inspection_receipt_sha256": "sha256:7c1e...",
         "policy_version": "cg-2026.11"
@@ -86,7 +93,7 @@ re-evaluates the request (R5, step 5) must see exactly what the engine saw.
   },
   "decision": "Allow",
   "reason": "granted",
-  "engine": { "impl": "ube-foundation", "version": "0.2.1" },
+  "engine": { "impl": "ube-foundation", "version": "0.2.2" },
   "issued_at": "2026-11-26T10:04:11Z",
   "prev_receipt_hash": "sha256:9d5c...",
   "receipt_hash": "sha256:41ab...",
@@ -98,7 +105,75 @@ re-evaluates the request (R5, step 5) must see exactly what the engine saw.
 receipt stays with its producer; NTI commits to it. That keeps the payload small
 and keeps each system's evidence verifiable by its own rules.
 
+## How the engine enforces the score
+
+The threshold is a caveat on the capability token. Wire form, externally tagged
+and pinned by a round-trip test in the core:
+
+```json
+{
+  "location": null,
+  "condition": { "RiskBelow": 0.65 }
+}
+```
+
+Attached at token issuance, on the issuing side:
+
+```rust
+let mut token = CapabilityToken {
+    id: "tok-1".into(),
+    root_actor: "issuer".into(),
+    capability: "tool:shell".into(),
+    caveats: vec![Caveat {
+        location: None,
+        condition: CaveatType::RiskBelow(0.65),
+    }],
+    signature: vec![],
+};
+token.signature = issuer_key.sign(&token.message_to_sign()).to_bytes().to_vec();
+```
+
+The engine reads `request.input.risk_score` and decides:
+
+| Condition | Verdict | Reason recorded in the receipt |
+| :--- | :--- | :--- |
+| `score < threshold` | Allow | the engine's normal allow reason |
+| `score >= threshold` | Deny | `Risk score 0.91 at or above threshold 0.65` |
+| `risk_score` absent | Deny | `Risk caveat requires a numeric 'risk_score'` |
+| `risk_score` not a number | Deny | `Risk caveat requires a numeric 'risk_score'` |
+| threshold not finite | Deny | `Risk threshold must be a finite number` |
+
+Equality denies. The last row is defence in depth: `score >= NaN` is false, so an
+unguarded NaN threshold would allow everything.
+
+Because the check now happens inside `verify_all_at`, the denial is part of the
+same evaluation that produces the receipt. The reason string is covered by
+`receipt_hash`, so a verifier re-evaluating the request gets the same answer.
+
+## What the engine change does not do
+
+**Enforcement requires a token.** `RiskBelow` is a caveat on a capability token.
+A deployment that authorises with `grant(actor, capability)` and no token has no
+caveats, so no threshold applies. The caveat must be attached where tokens are
+issued.
+
+**The Python binding cannot issue tokens.** `ube_foundation` exposes `grant`,
+`register_*`, `evaluate`/`evaluate_at` and `audit_inclusion_proof`; there is no
+token constructor and no Ed25519 signing, so a Python process cannot attach
+`RiskBelow` itself. Options, in order of preference:
+
+1. Issue the token in Rust (or any client holding the issuer key) and pass the
+   signed token in the request's `token` field.
+2. Keep the boundary check below for Python-only deployments, and say so.
+
+A pure-Python deployment that calls `grant()` and stops there is not enforcing
+the risk score, whatever the engine can do.
+
 ## Reference snippet
+
+The snippet builds the request so the score is committed, then evaluates. When
+the request carries a token with `RiskBelow`, the engine makes the call. The
+explicit check is kept as the fallback for the grant-only case described above.
 
 ```python
 import hashlib
@@ -133,8 +208,8 @@ def build_request(action_input: dict, inspection: dict) -> dict:
         "action": "bash",
         "input": {
             **action_input,
+            "risk_score": inspection["risk_score"],
             "canaryguard": {
-                "risk_score": inspection["risk_score"],
                 "verdict": inspection["verdict"],
                 "inspection_receipt_sha256": inspection["receipt_sha256"],
                 "policy_version": inspection["policy_version"],
@@ -143,13 +218,19 @@ def build_request(action_input: dict, inspection: dict) -> dict:
     }
 
 
-def authorize(engine, action_input: dict, inspection: dict) -> dict:
+def authorize(engine, action_input: dict, inspection: dict, token=None) -> dict:
     # The request is built first so a Deny still records what was evaluated (R6).
     request = build_request(action_input, inspection)
+    if token is not None:
+        request["token"] = token
 
-    # Boundary policy: a high-risk ingress blocks before the engine is asked.
-    # See "What is missing" below for why this is not a caveat yet.
-    if inspection["risk_score"] >= RISK_THRESHOLD:
+    if token is not None:
+        # The engine evaluates RiskBelow itself; this is the enforced path.
+        raw = engine.evaluate_at(json.dumps(request), datetime.now(timezone.utc).isoformat(), "")
+        result = json.loads(raw)
+        decision, reason = result["decision"], result["reason"]
+    elif inspection["risk_score"] >= RISK_THRESHOLD:
+        # Fallback for grant-only deployments, which carry no caveats.
         decision, reason = "Deny", "ingress risk above threshold"
     else:
         raw = engine.evaluate_at(json.dumps(request), datetime.now(timezone.utc).isoformat(), "")
@@ -162,7 +243,7 @@ def authorize(engine, action_input: dict, inspection: dict) -> dict:
         "request": request,
         "decision": decision,
         "reason": reason,
-        "engine": {"impl": "ube-foundation", "version": "0.2.1"},
+        "engine": {"impl": "ube-foundation", "version": "0.2.2"},
         "issued_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "prev_receipt_hash": None,
     }
@@ -181,32 +262,6 @@ if __name__ == "__main__":
     print("high risk ->", authorize(engine, {"command": "ls -la"}, risky)["reason"])
 ```
 
-## What is missing, and it is the important part
-
-**The engine cannot evaluate a risk score today.** `CaveatType` in
-`ube-foundation` 0.2.1 is `Expires`, `MaxExecutions`, `ValueLimit`,
-`PathRestricted`. There is no risk caveat, so the threshold check above sits at
-the integration boundary, in the caller's process.
-
-That is a real gap, not a detail. A boundary check is code the caller can skip;
-a caveat is evaluated by the engine and appears in the receipt's `reason`. Until
-a caveat exists, the honest description of this integration is:
-
-> CanaryGuard's score is committed into the signed request, so tampering with it
-> is detectable. It is *enforced* by the integrating policy layer, not by the
-> engine.
-
-The natural core change is a fifth variant, roughly:
-
-```rust
-/// Deny when the caller-supplied risk score is at or above this value.
-RiskBelow(f32),
-```
-
-evaluated against `request.input` before dispatch, with the observed score
-recorded in the receipt's `reason`. That would move enforcement inside the
-binding property, which is the only place it is worth having.
-
 ## Open questions for Kurox AI
 
 1. Does CanaryGuard sign its inspection receipt, and with which algorithm? NTI
@@ -224,6 +279,10 @@ binding property, which is the only place it is worth having.
 - No joint test exists. Nothing here has been run against a CanaryGuard instance.
 - The latency claim (sub-10 ms) is theirs; NTI adds one engine evaluation per
   action, which is not free and should be measured in the same harness.
+- The score is compared as `f64` against an `f32` threshold. Values with a few
+  decimal places round-trip exactly through JSON; a score carrying more precision
+  than `f32` can hold may not, and that would surface as a decision that does not
+  reproduce on re-evaluation.
 - The snippet builds a receipt-shaped object for illustration. A conformant
   deployment takes the receipt from the engine (R1: one operation returns the
   verdict and its receipt), not from the caller assembling one.
