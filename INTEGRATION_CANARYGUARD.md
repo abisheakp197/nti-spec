@@ -138,10 +138,10 @@ The engine reads `request.input.risk_score` and decides:
 | Condition | Verdict | Reason recorded in the receipt |
 | :--- | :--- | :--- |
 | `score < threshold` | Allow | the engine's normal allow reason |
-| `score >= threshold` | Deny | `Risk score 0.91 at or above threshold 0.65` |
-| `risk_score` absent | Deny | `Risk caveat requires a numeric 'risk_score'` |
-| `risk_score` not a number | Deny | `Risk caveat requires a numeric 'risk_score'` |
-| threshold not finite | Deny | `Risk threshold must be a finite number` |
+| `score >= threshold` | Deny | `caveat violation: Risk score 0.91 at or above threshold 0.65` |
+| `risk_score` absent | Deny | `caveat violation: Risk caveat requires a numeric 'risk_score'` |
+| `risk_score` not a number | Deny | `caveat violation: Risk caveat requires a numeric 'risk_score'` |
+| threshold not finite | Deny | `caveat violation: Risk threshold must be a finite number` |
 
 Equality denies. The last row is defence in depth: `score >= NaN` is false, so an
 unguarded NaN threshold would allow everything.
@@ -149,6 +149,31 @@ unguarded NaN threshold would allow everything.
 Because the check now happens inside `verify_all_at`, the denial is part of the
 same evaluation that produces the receipt. The reason string is covered by
 `receipt_hash`, so a verifier re-evaluating the request gets the same answer.
+
+### Signing a token that carries the caveat
+
+The signature covers `(id, root_actor, capability, caveats)` as compact JSON with
+object keys sorted, which is what `serde_json` produces without `preserve_order`.
+For a threshold of 0.65 the signed bytes are:
+
+```json
+["tok-1","issuer","tool:shell",[{"condition":{"RiskBelow":0.6499999761581421},"location":null}]]
+```
+
+Note the threshold. `f32` 0.65 widened to `f64` is 0.6499999761581421, and that
+is what appears in the signed bytes, while the token on the wire still carries
+0.65. An issuer that signs the literal `0.65` produces a token the engine
+rejects with `invalid token signature`. This was verified against the published
+0.2.2 wheel.
+
+Practical consequence: choose thresholds that are exact in `f32` (0.25, 0.5,
+0.75) so the signed form equals the wire form. A threshold such as 0.65 or 0.9
+must be signed in its widened form, which is easy to get wrong.
+
+The cleaner long-term fix is an integer representation, for example basis points
+(`RiskBelow(u32)`, 6500 = 0.65). That removes the widening entirely, keeps `Eq`
+derivable, and makes the signed bytes identical in every implementation. It is
+not in 0.2.2; the float form is what shipped.
 
 ## What the engine change does not do
 
@@ -279,10 +304,10 @@ if __name__ == "__main__":
 - No joint test exists. Nothing here has been run against a CanaryGuard instance.
 - The latency claim (sub-10 ms) is theirs; NTI adds one engine evaluation per
   action, which is not free and should be measured in the same harness.
-- The score is compared as `f64` against an `f32` threshold. Values with a few
-  decimal places round-trip exactly through JSON; a score carrying more precision
-  than `f32` can hold may not, and that would surface as a decision that does not
-  reproduce on re-evaluation.
+- The score is compared as `f64` against an `f32` threshold, and the signed
+  token bytes contain the widened form of that threshold. A score carrying more
+  precision than `f32` can hold may not reproduce on re-evaluation, and a
+  threshold that is not exact in `f32` is easy to sign wrongly (see above).
 - The snippet builds a receipt-shaped object for illustration. A conformant
   deployment takes the receipt from the engine (R1: one operation returns the
   verdict and its receipt), not from the caller assembling one.
