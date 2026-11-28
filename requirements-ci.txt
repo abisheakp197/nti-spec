@@ -7,6 +7,14 @@
 #
 # requests is used by scripts/check_links.py. All wheels are universal
 # (py3-none-any), so the hashes below work on every runner platform.
+#
+# ube-foundation is a native wheel, so every platform's artifact is hashed;
+# pip installs the one matching the runner and ignores the rest. It is here
+# because conformance/validate.py executes the Python blocks in the Markdown,
+# and the CanaryGuard integration example calls the real engine. Installing it
+# means CI verifies that example against the published artifact instead of
+# failing on a missing import.
+#
 # Hashes: https://pypi.org/project/<name>/<version>/#files
 certifi==2026.10.23 \
     --hash=sha256:e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1
@@ -19,3 +27,11 @@ requests==2.34.2 \
     --hash=sha256:f288924cae4e29463698d6d60bc6a4da69c89185ad1e0bcc4104f584e960b9ed
 urllib3==2.8.0 \
     --hash=sha256:0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3
+
+ube-foundation==0.2.2 \
+    --hash=sha256:16f69a0079d943698185330d67644ebc9a3f0f0ec68bd0a3bc0f092fe76a4323 \
+    --hash=sha256:66785cf8f0e6f93e0b384179dea4caeb36a21122c1b3f53fa989911d0483a54b \
+    --hash=sha256:e8f5446544e70badad7b2f8c241f3b271b5ed9d7208e7e7fbb29d692640e0b15 \
+    --hash=sha256:e0d91a8cd5b3a0c1b55b0057a99fe799cc3a60aaeb3bb937de19fc9201fd639c \
+    --hash=sha256:dcc64f70fcf7f9bd3832a28545be97713e1f205dda93fd2bd153dcd16ce18193 \
+    --hash=sha256:cbd190ebbd16234c280e4f65a8576be0f50da0794f6f6974d18a53470691f3e6
